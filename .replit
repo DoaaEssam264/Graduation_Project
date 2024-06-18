@@ -1,11 +1,15 @@
-modules = ["python-3.12"]
-run = "python app.py"
+modules = ["web", "nodejs-20", "python-3.12"]
+run = "python static/app.js"
 [nix]
 channel = "stable-23_11"
 
 [deployment]
-run = ["sh", "-c", "python app.py"]
+run = ["sh", "-c", "python static/app.js"]
 
 [[ports]]
 localPort = 5000
 externalPort = 80
+
+[[ports]]
+localPort = 8080
+externalPort = 8080
