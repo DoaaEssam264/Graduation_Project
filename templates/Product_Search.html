@@ -1,3 +1,4 @@
+<!-- el newest w ratings lesa w kaman el liked w add to favs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -59,18 +60,17 @@
      </div>
 
     
-   
 
     <br>
     <br>
 
     <div class="container">
+        {% for post in posts %}
         <div class="box">
-            <img src="insta1.jpg">
-            <h2>Palma</h2>
-            <p> A North African woman born in Cairo, rooted in 2016.
-                From the Mediterranean to the world.</p>
-            <span>120K Followers</span>
+            <img src="{{post.image}}">
+            <h2>{{ post.pagename }}</h2>
+            <p> {{ post.original_caption}}</p>
+            <span>{{ post.likescount}}</span>
             <div class="rate">
                 <i class="filled fas fa-star"></i>
                 <i class="filled fas fa-star"></i>
@@ -80,129 +80,12 @@
             </div>
             <div class="options">
                 <a href="#">Add to favorite</a>
-                <a href="#"> Instagram post</a>
+                <a href="{{ post.posturl}}"> Instagram post</a>
             </div>
         </div>
-        <div class="box">
-            <img src="red.jpg">
-            <h2>Dodice</h2>
-            <p>We Don't Sell Handbags We Sell Designs.</p>
-            <span>58.2K Followers</span>
-            <div class="rate">
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-            </div>
-            <div class="options">
-                <a href="#">Add to favorite</a>
-                <a href="#"> Instagram post</a>
-            </div>
-        </div>
-        <div class="box">
-            <img src="2brek.jpg">
-            <h2>Swarovski</h2>
-            <p>The engineers of wonder since 1895.</p>
-            <span>8.2M Followers</span>
-            <div class="rate">
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="fa-regular fa-star"></i>
-            </div>
-            <div class="options">
-                <a href="#">Add to favorite</a>
-                <a href="#"> Instagram post</a>
-            </div>
-        </div>
-        <div class="box">
-            <img src="jeans.jpg">
-            <h2>Jellavu</h2>
-            <p>Bridging the gap between fashion & people</p>
-            <span>151K Followers</span>
-            <div class="rate">
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-            </div>
-            <div class="options">
-                <a href="#">Add to favorite</a>
-                <a href="#"> Instagram post</a>
-            </div>
-        </div>
-        <div class="box">
-            <img src="imgs/watch.jpg">
-            <h2>Product 5</h2>
-            <p>Lorem ipsum, dolor amet  consect etur adipisicing sit elit.</p>
-            <span>$750</span>
-            <div class="rate">
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-            </div>
-            <div class="options">
-                <a href="#">Add to favorite</a>
-                <a href="#"> Instagram post</a>
-            </div>
-        </div>
-        <div class="box">
-            <img src="imgs/airpods.jpg">
-            <h2>Product 6</h2>
-            <p>Lorem ipsum, dolor amet  consect etur adipisicing sit elit.</p>
-            <span>$350</span>
-            <div class="rate">
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="fa-regular fa-star"></i>
-            </div>
-            <div class="options">
-                <a href="#">Add to favorite</a>
-                <a href="#"> Instagram post</a>
-            </div>
-        </div>
-        <div class="box">
-            <img src="imgs/headphone.jpg">
-            <h2>Product 7</h2>
-            <p>Lorem ipsum, dolor amet  consect etur adipisicing sit elit.</p>
-            <span>$250</span>
-            <div class="rate">
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="fa-regular fa-star"></i>
-            </div>
-            <div class="options">
-                <a href="#">Add to favorite</a>
-                <a href="#"> Instagram post</a>
-            </div>
-        </div>
-        <div class="box">
-            <img src="imgs/games.jpg">
-            <h2>Product 8</h2>
-            <p>Lorem ipsum, dolor amet  consect etur adipisicing sit elit.</p>
-            <span>$1000</span>
-            <div class="rate">
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="fa-regular fa-star"></i>
-            </div>
-            <div class="options">
-                <a href="#">Add to favorite</a>
-                <a href="#"> Instagram post</a>
-            </div>
-        </div>
+        {% endfor %}
     </div>
     <script src="app.js"></script>
 </body>
 </html>
+

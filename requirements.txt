@@ -2,3 +2,8 @@ Flask
 SQLAlchemy
 flask_sqlalchemy
 psycopg2-binary
+torch
+torchvision 
+sentence_transformers
+faiss-cpu
+
