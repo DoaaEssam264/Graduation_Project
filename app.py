@@ -15,9 +15,10 @@ engine = create_engine(db_connecton_uri)
 #     return render_template('Home.html')
 #TO CHECK DB
 # with engine.connect() as conn:
-#     result = conn.execute(text("SELECT page_username FROM pages"))
+#     result = conn.execute(text("SELECT category FROM pages"))
 #     usernamess = [row for row in result.all()]
 # print(usernamess)
+
 
 
 #homepage
@@ -25,6 +26,7 @@ engine = create_engine(db_connecton_uri)
 @app.route("/home")
 def home_page():
     pages=load_homepage_random_recommendations()
+    # unique_categories=get_unique_categories()
     return render_template('Home.html', recommendations=pages)
 
 
