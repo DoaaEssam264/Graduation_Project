@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request
 import os
-from database import load_homepage_random_recommendations,load_search_results
+import numpy as np
+import distutils
+from database import load_homepage_random_recommendations,load_search_results,get_cleaned_categories
 
 app = Flask(__name__)
 
@@ -9,9 +11,15 @@ app = Flask(__name__)
 @app.route("/")
 def home_page():
     pages=load_homepage_random_recommendations()
-    # unique_categories=get_unique_categories()
-    return render_template('Home.html', recommendations=pages)
-    
+    cleaned_categories = get_cleaned_categories()
+    return render_template('Home.html', recommendations=pages,categories=cleaned_categories)
+
+@app.route("/sign")
+def sign():
+    return render_template('signup_login.html')
+
+
+
 @app.route("/search_result")
 def search_results():
     data =request.args

@@ -1,5 +1,7 @@
 import pandas as pd
 from torch import Tensor, nn
+import numpy as np
+import faiss
 from sentence_transformers import SentenceTransformer
 
 def get_similar_posts(query_results,user_input_to_search_bar):
@@ -42,5 +44,3 @@ def get_similar_posts(query_results,user_input_to_search_bar):
   
 
   
-  
-
