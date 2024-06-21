@@ -12,6 +12,7 @@ engine = create_engine(db_connecton_uri)
 # print(usernamess)
 
 
+
 #LOAD RECOMENDED PAGES TO HOME PAGE
 def load_homepage_random_recommendations():
     with engine.connect() as conn:
@@ -57,3 +58,17 @@ def get_pages_of_a_certain_category(category):
     pages = [row._mapping for row in rows]
     return pages
 
+
+def load_user(username):
+    with engine.connect() as conn:
+        result = conn.execute(text("SELECT * FROM user_info WHERE login_username = :username"), {"username": username}).fetchone()
+        if result:
+            return result['login_username'], result['password']
+    return None
+
+
+def add_user(username, email, hashed_password):
+    with engine.connect() as conn:
+        conn.execute(text("INSERT INTO user_info (login_username, email, password) VALUES (:username, :email, :password)"),
+                     {"login_username": username, "email": email, "password": hashed_password})
+    

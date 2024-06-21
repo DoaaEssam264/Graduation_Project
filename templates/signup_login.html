@@ -15,13 +15,14 @@
                 <h2 class="title">Sign in</h2>
                 <div class="input-field">
                     <i class="fas fa-user"></i>
-                    <input type="text" placeholder="Username" name="Username" required>
+                    <input type="text" placeholder="Username" name="login_username" required>
                 </div>
                 <div class="input-field">
                     <i class="fas fa-lock"></i>
                     <input type="password" placeholder="Password"
-                        name="Password" required>
+                        name="login_password" required>
                 </div>
+                <input type="hidden" name="form_type" value="login">
                 <input type="submit" value="Login" class="btn">
                 <p class="social-text">Or Sign in with social platform</p>
                 <div class="social-media">
@@ -40,20 +41,23 @@
                 </div>
                 <p class="account-text">Don't have an account? <a href="#" id="sign-up-btn2">Sign up</a></p>
             </form>
+
+            
             <form action="/register" class="sign-up-form" method="POST">
                 <h2 class="title">Sign up</h2>
                 <div class="input-field">
                     <i class="fas fa-user"></i>
-                    <input type="text" placeholder="Username">
+                    <input type="text" placeholder="Username" name="register_username">
                 </div>
                 <div class="input-field">
                     <i class="fas fa-envelope"></i>
-                    <input type="text" placeholder="Email">
+                    <input type="text" placeholder="Email" name="register_email">
                 </div>
                 <div class="input-field">
                     <i class="fas fa-lock"></i>
-                    <input type="password" placeholder="Password">
+                    <input type="password" placeholder="Password" name="register_password"">
                 </div>
+                <input type="hidden" name="form_type" value="register">
                 <input type="submit" value="Sign up" class="btn">
                 <p class="social-text">Or Sign in with social platform</p>
                 <div class="social-media">

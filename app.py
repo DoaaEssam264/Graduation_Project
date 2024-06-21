@@ -1,37 +1,59 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, url_for, redirect
 import os
 import numpy as np
-from database import load_homepage_random_recommendations,load_search_results
+from database import load_homepage_random_recommendations,load_search_results,load_user,add_user
 from database import get_cleaned_categories,get_pages_of_a_certain_category
+from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField
+from wtforms.validators import InputRequired, Length, ValidationError
+from flask_bcrypt import Bcrypt
 
 app = Flask(__name__)
+bcrypt = Bcrypt(app)
 
-# class User(UserMixin):
-#     def __init__(self, id, username, email, password):
-#         self.id = id
-#         self.username = username
-#         self.email = email
-#         self.password = password
 
-# metadata = MetaData()
-# user_info = Table('user_info', metadata, autoload=True, autoload_with=engine)
-# Session = sessionmaker(bind=engine)
-# session = Session()
-#homepage
-#if list of search empty, return random otherwise return pages similars to search
+
+
+@app.route("/register", methods=['GET','POST'])
+def register():
+    if request.method == 'POST':
+        form_type = request.form.get('form_type')
+        if form_type == 'register':
+            username = request.form.get('register_username')
+            email=request.form.get('register_email')
+            password = request.form.get('register_password')
+            hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+            check=load_user(username)
+            if check:
+                return render_template('signup_login.html', form_type=form_type, error='Username already exists')
+            else:
+                add_user(username, email, hashed_password)
+                return render_template("Home.html")
+        elif form_type == 'login':
+            username = request.form.get('login_username')
+            password = request.form.get('login_password')
+            check=load_user(username)
+            if check:
+                if bcrypt.check_password_hash(check[1], password):
+                    login_user(check[0])
+                    current_username=check[0]
+                    return render_template("Home.html",current_username=current_username)
+                else:
+                    return render_template('signup_login.html', form_type=form_type, error='Invalid password')
+            else:
+                 return render_template('signup_login.html', form_type=form_type, error='Invalid username')
+    return render_template('signup_login.html')
+        
+
+
+
 
 @app.route("/")
 def home_page():
     pages=load_homepage_random_recommendations()
     cleaned_categories = get_cleaned_categories()
     return render_template('Home.html', recommendations=pages,categories=cleaned_categories)
-
-# @app.route("/login", methods=['GET','POST'])
-# def sign():
-#     if request.method=='POST':
-#         username=request.form('Username')
-#         password=request.form('Password')
-#     return render_template('signup_login.html')
 
 @app.route("/category/<category>")
 def category(category):
@@ -40,11 +62,6 @@ def category(category):
     return render_template('Category_search.html',categories=cleaned_categories,category_pages=category_pages,category_name=category)
 
 
-
- # cleaned_categories = get_cleaned_categories()
- # category_pages=get_pages_of_a_certain_category(category)
- # return render_template('Category_search.html',categories=cleaned_categories)
-    
 
 @app.route("/favorite")
 def favorite():
