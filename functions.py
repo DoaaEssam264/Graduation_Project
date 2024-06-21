@@ -7,6 +7,7 @@ from sentence_transformers import SentenceTransformer
 def get_similar_posts(query_results,user_input_to_search_bar):
   model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
   df = pd.DataFrame(query_results.fetchall(), columns=query_results.keys())
+    
   # #\ Generate query embedding and make it in lowercase
   user_input_to_search_bar=user_input_to_search_bar.lower()
   query_embedding = model.encode([user_input_to_search_bar])
@@ -15,6 +16,7 @@ def get_similar_posts(query_results,user_input_to_search_bar):
   similarities = cosine_similarity(query_embedding, post_embeddings).flatten()
   df['similarity'] = similarities
   # increase the sim for captions that have the same as user input respectfully
+
   query_words = user_input_to_search_bar.split()
   for index, row in df.iterrows():
         found_words = 0
