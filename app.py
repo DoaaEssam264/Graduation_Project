@@ -1,19 +1,10 @@
 from flask import Flask, render_template, request, url_for, redirect
-import os
-import numpy as np
-from database import load_homepage_random_recommendations,load_search_results,load_user,add_user
-from database import get_cleaned_categories,get_pages_of_a_certain_category
-from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
-from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import InputRequired, Length, ValidationError
+from database import load_homepage_random_recommendations,load_search_results,add_user,load_user,get_cleaned_categories,get_pages_of_a_certain_category
 from flask_bcrypt import Bcrypt
+
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
-
-
-
 
 @app.route("/register", methods=['GET','POST'])
 def register():
@@ -26,27 +17,27 @@ def register():
             hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
             check=load_user(username)
             if check:
-                return render_template('signup_login.html', form_type=form_type, error='Username already exists')
+                # Add error message
+                return  redirect(url_for('register', error='Username already exists'))
+                # return render_template('signup_login.html', form_type=form_type, error='Username already exists')
             else:
                 add_user(username, email, hashed_password)
-                return render_template("Home.html")
+                return redirect(url_for('home_page'))
         elif form_type == 'login':
             username = request.form.get('login_username')
             password = request.form.get('login_password')
             check=load_user(username)
             if check:
                 if bcrypt.check_password_hash(check[1], password):
-                    login_user(check[0])
-                    current_username=check[0]
-                    return render_template("Home.html",current_username=current_username)
+                    return redirect(url_for('home_page'))
                 else:
-                    return render_template('signup_login.html', form_type=form_type, error='Invalid password')
+                        return redirect(url_for('register'))
+                        #print('user's password wrong')
             else:
-                 return render_template('signup_login.html', form_type=form_type, error='Invalid username')
+                    return redirect(url_for('register'))
+                #print('wrong username')
     return render_template('signup_login.html')
         
-
-
 
 
 @app.route("/")
@@ -82,6 +73,7 @@ def search_results():
     posts=load_search_results(data['user_input_to_search_bar'])
     dict_len=len(posts)
     return render_template('Product_Search.html', posts=posts,categories=cleaned_categories,dict_len=dict_len)
+    
 # @app.route("/product_info")
 # def product_info():
 #     pages=load_homepage_random_recommendations()

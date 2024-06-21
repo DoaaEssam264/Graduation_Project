@@ -59,16 +59,17 @@ def get_pages_of_a_certain_category(category):
     return pages
 
 
-def load_user(username):
+def load_user(login_username):
     with engine.connect() as conn:
-        result = conn.execute(text("SELECT * FROM user_info WHERE login_username = :username"), {"username": username}).fetchone()
+        info = conn.execute(text("SELECT * FROM user_info WHERE login_username = :login_username"), {"login_username": login_username})
+        result = info.fetchone()
         if result:
-            return result['login_username'], result['password']
+          return (result[0], result[2])
     return None
 
-
-def add_user(username, email, hashed_password):
+def add_user(login_username, email, hashed_password):
     with engine.connect() as conn:
-        conn.execute(text("INSERT INTO user_info (login_username, email, password) VALUES (:username, :email, :password)"),
-                     {"login_username": username, "email": email, "password": hashed_password})
-    
+        trans = conn.begin()
+        conn.execute(text("INSERT INTO user_info (login_username, email, password) VALUES (:login_username, :email, :password)"),
+                          {"login_username": login_username, "email": email, "password": hashed_password})
+        trans.commit()
