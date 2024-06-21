@@ -32,7 +32,10 @@ def get_similar_posts(query_results,user_input_to_search_bar):
   df = df.sort_values(by='similarity', ascending=False)
   return df.to_dict(orient='records')
 
-
+def clean_category(category):
+  if category.startswith('new category: '):
+      return category.replace('new category: ', '')
+  return category
 
   
   

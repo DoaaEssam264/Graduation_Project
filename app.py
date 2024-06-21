@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request
 import os
 import numpy as np
-from database import load_homepage_random_recommendations,load_search_results,get_cleaned_categories
+from database import load_homepage_random_recommendations,load_search_results
+from database import get_cleaned_categories,get_pages_of_a_certain_category
 
 app = Flask(__name__)
 
@@ -18,6 +19,7 @@ app = Flask(__name__)
 # session = Session()
 #homepage
 #if list of search empty, return random otherwise return pages similars to search
+
 @app.route("/")
 def home_page():
     pages=load_homepage_random_recommendations()
@@ -31,10 +33,18 @@ def home_page():
 #         password=request.form('Password')
 #     return render_template('signup_login.html')
 
-@app.route("/chosen_category")
-def category():
+@app.route("/category/<category>")
+def category(category):
     cleaned_categories = get_cleaned_categories()
-    return render_template('Category_search.html',categories=cleaned_categories)
+    category_pages=get_pages_of_a_certain_category(category.lower())
+    return render_template('Category_search.html',categories=cleaned_categories,category_pages=category_pages)
+
+
+
+ # cleaned_categories = get_cleaned_categories()
+ # category_pages=get_pages_of_a_certain_category(category)
+ # return render_template('Category_search.html',categories=cleaned_categories)
+    
 
 @app.route("/favorite")
 def favorite():

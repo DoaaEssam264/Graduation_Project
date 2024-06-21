@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine, text
 import os
-from functions import get_similar_posts
+from functions import get_similar_posts,clean_category
 
 db_connecton_uri = os.environ['db_connection_uri']
 engine = create_engine(db_connecton_uri)
@@ -30,12 +30,6 @@ def load_search_results(user_input_to_search_bar):
     return get_similar_posts(result,user_input_to_search_bar)
 
 
-
-def clean_category(category):
-    if category.startswith('new category: '):
-        return category.replace('new category: ', '')
-    return category
-
 def get_cleaned_categories():
     with engine.connect() as conn:
         result = conn.execute(text("SELECT category FROM pages"))
@@ -48,3 +42,18 @@ def get_cleaned_categories():
 
     unique_cleaned_categories = list(set(cleaned_categories))
     return sorted(unique_cleaned_categories)
+
+
+
+def get_pages_of_a_certain_category(category):
+    # geting all pages that belong to a specific category
+    specific_category = f"%'{category}'%"
+    with engine.connect() as conn:
+          result = conn.execute(text("""SELECT * FROM pages 
+          WHERE category LIKE :specific_category"""),     
+          {'specific_category': specific_category})
+          rows = result.fetchall()
+    # Convert the rows into a list of dictionaries
+    pages = [row._mapping for row in rows]
+    return pages
+

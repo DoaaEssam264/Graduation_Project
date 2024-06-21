@@ -3,8 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='Home.css') }}" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous"/>
-    <link rel="stylesheet" href="static/Home.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+  
     <title>Category Search</title>
 </head>
 <body>
@@ -31,7 +36,7 @@
             </label>
             <ul>
               {% for category in categories %}
-              <li><a href="#">{{category}}</a></li>
+              <li><a href="/category/{{category}}">{{category}}</a></li>
               {% endfor %}
             </ul>
           </li>
@@ -55,71 +60,29 @@
       </form>
     </nav>
   </div>
-    
-    
-    
 
+<br>
+  <br> <br> <br>
+ 
+  <h2 style="margin: 5px;"> Category {{category_name}}</h2>
+
+  
+
+  
       <div class="card-container">
-        <div class="card">
-          <img src="backgroud.jpg" >
-          <div class="card-content">
-              <h3>Palma</h3> 
-              <p class="rate">2.5 <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i></p>
-              <p> Fashion,shoes and bags</p>
-               <a href="" class="btn">Instagram <i class="fab fa-instagram"></i></a>
-               <p class="btn2">200K  <i class="fas fa-users"></i></p>
-          </div>
-      </div>
-      <div class="card">
-        <img src="backgroud.jpg" >
-        <div class="card-content">
-            <h3>Palma</h3> 
-            <p class="rate">2.5 <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i></p>
-            <p> Fashion,shoes and bags</p>
-             <a href="" class="btn">Instagram <i class="fab fa-instagram"></i></a>
-             <p class="btn2">200K  <i class="fas fa-users"></i></p>
+        {% for page in category_pages: %}
+          <div class="card">
+            <img src="{{page.profilepicurlhd}}" >
+            <div class="card-content">
+                <h3>{{page.page_username}}</h3> 
+                <p class="rate">{{page.rate}} <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i></p>
+                <p> {{page.category}}</p>
+                 <a href="{{page.url}}" class="btn">Instagram <i class="fab fa-instagram"></i></a>
+                 <p class="btn2">{{page.followerscount}}<i class="fas fa-users"></i></p>
+            </div>
         </div>
-     </div>
-      <div class="card">
-        <img src="backgroud.jpg" >
-        <div class="card-content">
-            <h3>Palma</h3> 
-            <p class="rate">2.5 <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i></p>
-            <p> Fashion,shoes and bags</p>
-            <a href="" class="btn">Instagram <i class="fab fa-instagram"></i></a>
-            <p class="btn2">200K  <i class="fas fa-users"></i></p>
-        </div>
-     </div>
-     <div class="card">
-      <img src="insta1.jpg" >
-      <div class="card-content">
-          <h3>Palma</h3> 
-          <p class="rate">2.5 <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i></p>
-          <p> Fashion,shoes and bags</p>
-           <a href="" class="btn">Instagram <i class="fab fa-instagram"></i></a>
-           <p class="btn2">200K  <i class="fas fa-users"></i></p>
-      </div>
-  </div>
-  <div class="card">
-    <img src="backgroud.jpg" >
-    <div class="card-content">
-        <h3>Palma</h3> 
-        <p class="rate">2.5 <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i></p>
-        <p> Fashion,shoes and bags</p>
-         <a href="" class="btn">Instagram <i class="fab fa-instagram"></i></a>
-         <p class="btn2">200K  <i class="fas fa-users"></i></p>
-    </div>
-  </div>
-  <div class="card">
-    <img src="backgroud.jpg" >
-    <div class="card-content">
-        <h3>Palma</h3> 
-        <p class="rate">2.5 <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i></p>
-        <p> Fashion,shoes and bags</p>
-         <a href="" class="btn">Instagram <i class="fab fa-instagram"></i></a>
-         <p class="btn2">200K  <i class="fas fa-users"></i></p>
-    </div>
-  </div>
+        {% endfor %}
+
 </div>
 
 </body>
