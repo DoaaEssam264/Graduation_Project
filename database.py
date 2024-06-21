@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine, text
 import os
-# from functions import get_similar_posts
+from functions import get_similar_posts
 
 db_connecton_uri = os.environ['db_connection_uri']
 engine = create_engine(db_connecton_uri)
@@ -16,7 +16,7 @@ engine = create_engine(db_connecton_uri)
 def load_homepage_random_recommendations():
     with engine.connect() as conn:
         result = conn.execute(
-            text("SELECT * FROM pages ORDER BY RANDOM() LIMIT 20"))
+            text("SELECT * FROM pages ORDER BY RANDOM() LIMIT 4"))
         pages = []
         for page in result.all():
             pages.append(page._mapping)
@@ -44,10 +44,7 @@ def get_cleaned_categories():
     for row in categories:
         category_list = eval(row[0])  # Assuming the categories are stored as a string representation of a list
         for category in category_list:
-            cleaned_categories.append(clean_category(category))
+            cleaned_categories.append(clean_category(category).title())
 
     unique_cleaned_categories = list(set(cleaned_categories))
-    return unique_cleaned_categories
-
-cleaned_categories = get_cleaned_categories()
-print(cleaned_categories)
+    return sorted(unique_cleaned_categories)

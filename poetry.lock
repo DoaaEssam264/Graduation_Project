@@ -622,16 +622,6 @@ files = [
 ]
 
 [[package]]
-name = "numpy1"
-version = "0.0.1"
-description = "Python"
-optional = false
-python-versions = "*"
-files = [
-    {file = "numpy1-0.0.1.tar.gz", hash = "sha256:4978e0d416081a15bd884765147103ae7a0fc9f9adefa1f9c1fb9651272375a8"},
-]
-
-[[package]]
 name = "nvidia-cublas-cu12"
 version = "12.1.3.1"
 description = "CUBLAS native runtime libraries"
@@ -1819,4 +1809,4 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "fa0bae1f04eaa9b99b12559368c64a94cc017bec016e0628055f918bc4e1ca02"
+content-hash = "e8ead8ffd777fbe0fb3b5476fc19abd026ad97a7086f7a5c07b7435a47fee887"

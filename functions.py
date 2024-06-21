@@ -1,7 +1,7 @@
 import pandas as pd
 from torch import Tensor, nn
 import numpy as np
-import faiss
+from sklearn.metrics.pairwise import cosine_similarity
 from sentence_transformers import SentenceTransformer
 
 def get_similar_posts(query_results,user_input_to_search_bar):
@@ -10,32 +10,24 @@ def get_similar_posts(query_results,user_input_to_search_bar):
   # #\ Generate query embedding and make it in lowercase
   user_input_to_search_bar=user_input_to_search_bar.lower()
   query_embedding = model.encode([user_input_to_search_bar])
-  #  Building the FAISS index
   post_embeddings =np.array(df["cap_embedding"].values.tolist())
-
-  dimension = post_embeddings.shape[1]
-  index = faiss.IndexFlatL2(dimension)  
-  index.add(post_embeddings)
-  # Perform the search and adding the distances of nn (all) to df
-  distances, indices = index.search(query_embedding, len(df))
-  flattened_distances = distances.flatten()
-  flattened_indices = indices.flatten()
-  df['distance'] = np.nan
-  df.loc[flattened_indices, 'distance'] = flattened_distances
-  # decrease the distance for captions that have the same as user input respectfully
-  query_words = query.split()
+  # Calculate cosine similarity
+  similarities = cosine_similarity(query_embedding, post_embeddings).flatten()
+  df['similarity'] = similarities
+  # increase the sim for captions that have the same as user input respectfully
+  query_words = user_input_to_search_bar.split()
   for index, row in df.iterrows():
-      found_words = 0
-      for word in query_words:
-          if word in row["caption"]:
-              found_words += 1
-      if found_words == len(query_words):
-          df.at[index, "distance"] -= df["distance"].min()
-      elif found_words > 0:
-           df.at[index, "distance"] -=  10
+        found_words = 0
+        for word in query_words:
+            if word in row["caption"]:
+                found_words += 1
+        if found_words == len(query_words):
+            df.at[index, "similarity"] += 0.3
+        elif found_words > len(query_words)/2:
+            df.at[index, "similarity"] += 0.1
   
-  df=df[df['distance']<30]
-  df = df.sort_values(by='distance', ascending=True)
+  df = df[df['similarity'] > 0.7]
+  df = df.sort_values(by='similarity', ascending=False)
   return df.to_dict(orient='records')
 
 
