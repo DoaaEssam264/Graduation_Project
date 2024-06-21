@@ -37,7 +37,7 @@ def home_page():
 def category(category):
     cleaned_categories = get_cleaned_categories()
     category_pages=get_pages_of_a_certain_category(category.lower())
-    return render_template('Category_search.html',categories=cleaned_categories,category_pages=category_pages)
+    return render_template('Category_search.html',categories=cleaned_categories,category_pages=category_pages,category_name=category)
 
 
 
