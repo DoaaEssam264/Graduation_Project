@@ -17,6 +17,13 @@ def favorite():
     return  redirect(url_for('register'))
 
 
+@app.route("/accountpage")
+def accountpage():
+    if 'loggedin' in session:
+        cleaned_categories = get_cleaned_categories()
+        return render_template('account.html',categories=cleaned_categories)
+    return  redirect(url_for('register'))
+
 # @app.route("/chatbot")
 # def chatbot():
 #     if 'loggedin' in session:
