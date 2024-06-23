@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, url_for, redirect ,session,flash
-from database import load_homepage_random_recommendations,load_search_results,add_user,load_user,get_cleaned_categories,get_pages_of_a_certain_category,get_favorite_posts,add_post_to_favorites,number_of_fav_posts,remove_post
+from database import load_homepage_random_recommendations,load_search_results,add_user,load_user,get_cleaned_categories,get_pages_of_a_certain_category,get_favorite_posts,add_post_to_favorites,number_of_fav_posts,remove_post,show_product_func
 from flask_bcrypt import Bcrypt
 import os
 
@@ -100,10 +100,10 @@ def category(category):
     category_pages=get_pages_of_a_certain_category(category.lower())
     return render_template('Category_search.html',categories=cleaned_categories,category_pages=category_pages,category_name=category)
 
-@app.route("/product_info")
-def product_info():
-    cleaned_categories = get_cleaned_categories()
-    return render_template('SHOW_product.html',categories=cleaned_categories)
+# @app.route("/product_info")
+# def product_info():
+#     cleaned_categories = get_cleaned_categories()
+#     return render_template('SHOW_product.html',categories=cleaned_categories)
 
 
 @app.route("/search_result")
@@ -123,11 +123,13 @@ def remove_fav_post(post_id):
     return redirect(url_for('favorite'))
 
 
-# @app.route("/product_info")
-# def product_info():
-#     pages=load_homepage_random_recommendations()
-#     # unique_categories=get_unique_categories()
-#     return render_template('Home.html', recommendations=pages)
+@app.route("/show_product/<post_id>")
+def show_product(post_id):
+    cleaned_categories = get_cleaned_categories()
+    post=show_product_func(post_id)
+    return render_template('SHOW_product.html',
+        categories=cleaned_categories,post=post)
+    
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0',debug=True)

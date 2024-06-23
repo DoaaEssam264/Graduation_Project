@@ -30,6 +30,17 @@ def load_search_results(user_input_to_search_bar):
         result=conn.execute(text("SELECT * FROM posts")) 
     return get_similar_posts(result,user_input_to_search_bar)
 
+def show_product_func(post_id):
+    query = text("""
+        SELECT * 
+        FROM posts 
+        WHERE post_id = :post_id """)
+    with engine.connect() as conn:
+        result = conn.execute(query, {"post_id": post_id})
+        product = result.fetchone()
+        cols=result.keys()
+        prod = dict(zip(cols, product))
+        return prod
 
 def get_cleaned_categories():
     with engine.connect() as conn:
