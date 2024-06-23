@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, url_for, redirect ,session,flash
-from database import load_homepage_random_recommendations,load_search_results,add_user,load_user,get_cleaned_categories,get_pages_of_a_certain_category,get_favorite_posts,add_post_to_favorites,number_of_fav_posts
+from database import load_homepage_random_recommendations,load_search_results,add_user,load_user,get_cleaned_categories,get_pages_of_a_certain_category,get_favorite_posts,add_post_to_favorites,number_of_fav_posts,remove_post
 from flask_bcrypt import Bcrypt
 import os
 
@@ -114,7 +114,15 @@ def search_results():
     posts=load_search_results(data['user_input_to_search_bar'])
     dict_len=len(posts)
     return render_template('Product_Search.html', posts=posts,categories=cleaned_categories,dict_len=dict_len)
-    
+
+@app.route("/remove_post/<post_id>")
+def remove_fav_post(post_id):
+    if 'loggedin' in session:
+        log_username=session['username']
+        remove_post(log_username, post_id)
+    return redirect(url_for('favorite'))
+
+
 # @app.route("/product_info")
 # def product_info():
 #     pages=load_homepage_random_recommendations()

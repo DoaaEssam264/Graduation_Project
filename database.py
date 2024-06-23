@@ -111,3 +111,8 @@ def add_post_to_favorites(log_username, fav_post_id):
         conn.execute(text("INSERT INTO fav (log_username, fav_post_id) VALUES (:log_username, :fav_post_id)"), {"log_username": log_username, "fav_post_id": fav_post_id})
         trans.commit()
 
+def remove_post(log_username, post_id):
+    with engine.connect() as conn:
+        trans = conn.begin()
+        conn.execute(text("DELETE FROM fav WHERE log_username = :log_username AND fav_post_id = :post_id"), {"log_username": log_username, "post_id": post_id})
+        trans.commit()

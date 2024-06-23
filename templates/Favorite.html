@@ -71,21 +71,13 @@
       {% for post in favorite_posts %}
         <div class="box">
             <img src="{{ post.profilepicurlhd }}">
-            <h2>{{ post.pagename }}</h2>
-            <p>{{ post.category }}</p>
-            <p>{{ post.bio }}</p>
-            <span>{{ post.likescount }} Likes</span>
-            <!-- <div class="rate">
-                {% for i in range(1, 6) %}
-                    {% if i <= post.rating %}
-                        <i class="filled fas fa-star"></i>
-                    {% else %}
-                        <i class="fa-regular fa-star"></i>
-                    {% endif %}
-                {% endfor %}
-            </div> -->
+            <h2>{{ post.pagename}}</h2>
+            <p>{{ post.category}}</p>
+            <p>{{ post.bio}}</p>
+            <span>{{ post.likescount}} Likes</span>
+            <div class="rate">Rate: </div> 
             <div class="options">
-                <a href="#">Delete</a>
+                <a href="/remove_post/{{ post.post_id}}"">Remove</a>
                 <a href="{{post.posturl}}">Instagram post</a>
             </div>
         </div>
