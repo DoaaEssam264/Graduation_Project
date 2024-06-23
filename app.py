@@ -1,5 +1,5 @@
-from flask import Flask, render_template, request, url_for, redirect ,session
-from database import load_homepage_random_recommendations,load_search_results,add_user,load_user,get_cleaned_categories,get_pages_of_a_certain_category
+from flask import Flask, render_template, request, url_for, redirect ,session,flash
+from database import load_homepage_random_recommendations,load_search_results,add_user,load_user,get_cleaned_categories,get_pages_of_a_certain_category,get_favorite_posts,add_post_to_favorites,number_of_fav_posts
 from flask_bcrypt import Bcrypt
 import os
 
@@ -8,20 +8,31 @@ bcrypt = Bcrypt(app)
 my_secret = os.environ['SECRET_KEY']
 app.secret_key = my_secret
 
-
-@app.route("/favorite")
+@app.route("/favorite", methods=['GET', 'POST'])
 def favorite():
     if 'loggedin' in session:
         cleaned_categories = get_cleaned_categories()
-        return render_template('Favorite.html',categories=cleaned_categories)
-    return  redirect(url_for('register'))
+        log_username=session['username']
+        favorite_posts = get_favorite_posts(log_username)
+        return render_template('Favorite.html', categories=cleaned_categories, favorite_posts=favorite_posts)
+    return redirect(url_for('register'))
+
+@app.route("/favorite/<post_id>")
+def favorite_addtolist(post_id):
+    if 'loggedin' in session:
+        log_username=session['username']
+        add_post_to_favorites(log_username, post_id)
+    return redirect(url_for('favorite'))
+
 
 
 @app.route("/accountpage")
 def accountpage():
     if 'loggedin' in session:
         cleaned_categories = get_cleaned_categories()
-        return render_template('account.html',categories=cleaned_categories)
+        username=session['username']
+        NoFavoritePost=number_of_fav_posts(username)
+        return render_template('account.html',categories=cleaned_categories,username=username,NoFavoritePost=NoFavoritePost)
     return  redirect(url_for('register'))
 
 # @app.route("/chatbot")

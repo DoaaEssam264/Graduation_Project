@@ -61,84 +61,35 @@
       <br>
      
         
-      <div class="heading">
-        <h1>My favorite list</h1>
+    <div class="heading">
+        <h1>My Favorite List</h1>
     </div>
-
+  
     <div class="container">
+
+      
+      {% for post in favorite_posts %}
         <div class="box">
-            <img src="insta1.jpg">
-            <h2>Palma</h2>
-            <p> A North African woman born in Cairo, rooted in 2016.
-                From the Mediterranean to the world.</p>
-            <span>120K Followers</span>
-            <div class="rate">
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="fa-regular fa-star"></i>
-            </div>
+            <img src="{{ post.profilepicurlhd }}">
+            <h2>{{ post.pagename }}</h2>
+            <p>{{ post.category }}</p>
+            <p>{{ post.bio }}</p>
+            <span>{{ post.likescount }} Likes</span>
+            <!-- <div class="rate">
+                {% for i in range(1, 6) %}
+                    {% if i <= post.rating %}
+                        <i class="filled fas fa-star"></i>
+                    {% else %}
+                        <i class="fa-regular fa-star"></i>
+                    {% endif %}
+                {% endfor %}
+            </div> -->
             <div class="options">
                 <a href="#">Delete</a>
-                <a href="#"> Instagram post</a>
+                <a href="{{post.posturl}}">Instagram post</a>
             </div>
         </div>
-        <div class="box">
-            <img src="red.jpg">
-            <h2>Dodice</h2>
-            <p>We Don't Sell Handbags We Sell Designs.</p>
-            <span>58.2K Followers</span>
-            <div class="rate">
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-            </div>
-            <div class="options">
-                <a href="#">Add to favorite</a>
-                <a href="#"> Instagram post</a>
-            </div>
-        </div>
-        <div class="box">
-            <img src="2brek.jpg">
-            <h2>Swarovski</h2>
-            <p>The engineers of wonder since 1895.</p>
-            <span>8.2M Followers</span>
-            <div class="rate">
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="fa-regular fa-star"></i>
-            </div>
-            <div class="options">
-                <a href="#">Add to favorite</a>
-                <a href="#"> Instagram post</a>
-            </div>
-        </div>
-        <div class="box">
-            <img src="jeans.jpg">
-            <h2>Jellavu</h2>
-            <p>Bridging the gap between fashion & people</p>
-            <span>151K Followers</span>
-            <div class="rate">
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-            </div>
-            <div class="options">
-                <a href="#">Add to favorite</a>
-                <a href="#"> Instagram post</a>
-            </div>
-  
-        </div>
-        
-          
-
+      {% endfor %}
     </div>
 </body>
 </html>

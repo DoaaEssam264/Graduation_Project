@@ -73,29 +73,33 @@
     <br>
 
     <div class="container">
-      {%if dict_len==0 %}
-        <h1>No results found</h1>
-      {%else%}
-        {% for post in posts %}
-        <div class="box">
-            <img src="{{post.image}}">
-            <h2>{{ post.pagename }}</h2>
-            <p> {{ post.original_caption}}</p>
-            <span>{{ post.likescount}}</span>
-            <div class="rate">
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="filled fas fa-star"></i>
-                <i class="fa-regular fa-star"></i>
+        {% if dict_len == 0 %}
+            <h1>No results found</h1>
+        {% else %}
+            {% for post in posts %}
+            <div class="box">
+                <img src="{{ post.image }}">
+                <h2>{{ post.pagename }}</h2>
+                <p>{{ post.original_caption }}</p>
+                {% if post.likescount ==-1 %}
+                      <span> Likes: Hidden </span>
+                {% else %}
+                      <span> Likes: {{ post.likescount }} </span>
+                {% endif %} 
+                <div class="rate">
+                    <i class="filled fas fa-star"></i>
+                    <i class="filled fas fa-star"></i>
+                    <i class="filled fas fa-star"></i>
+                    <i class="filled fas fa-star"></i>
+                    <i class="fa-regular fa-star"></i>
+                </div>
+                <div class="options">
+                    <a href="favorite/{{ post.post_id}}">Add to favorite</a>
+                    <a href="{{ post.posturl }}">Instagram post</a>
+                </div>
             </div>
-            <div class="options">
-                <a href="#">Add to favorite</a>
-                <a href="{{ post.posturl}}"> Instagram post</a>
-            </div>
-        </div>
-        {% endfor %}
-      {% endif %}
+            {% endfor %}
+        {% endif %}
     </div>
     <script src="app.js"></script>
 </body>

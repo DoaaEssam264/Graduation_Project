@@ -37,7 +37,5 @@ def clean_category(category):
       return category.replace('new category: ', '')
   return category
 
-  
-  
 
   

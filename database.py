@@ -45,6 +45,22 @@ def get_cleaned_categories():
     return sorted(unique_cleaned_categories)
 
 
+def get_favorite_posts(log_username):
+    query = text("""
+        SELECT p.* 
+        FROM fav f 
+        JOIN posts p ON f.fav_post_id = p.post_id 
+        WHERE f.log_username = :log_username
+    """)
+    with engine.connect() as conn:
+        result = conn.execute(query, {"log_username": log_username})
+        favorite_posts = result.fetchall()
+        columns=result.keys()
+        favorite_posts_dicts = [dict(zip(columns, row)) for row in favorite_posts]
+    return favorite_posts
+
+
+
 
 def get_pages_of_a_certain_category(category):
     # geting all pages that belong to a specific category
@@ -73,3 +89,25 @@ def add_user(login_username, email, hashed_password):
         conn.execute(text("INSERT INTO user_info (login_username, email, password) VALUES (:login_username, :email, :password)"),
                           {"login_username": login_username, "email": email, "password": hashed_password})
         trans.commit()
+
+
+def number_of_fav_posts(username):
+    query = text("""
+        SELECT COUNT(DISTINCT fav_post_id) AS liked_count
+        FROM fav
+        WHERE log_username = :username
+    """)
+    with engine.connect() as conn:
+        result = conn.execute(query, {"username": username})
+        liked_count = result.fetchone()[0]
+    return liked_count
+
+def add_post_to_favorites(log_username, fav_post_id):
+    print("first",log_username)
+    log_username = str(log_username)
+    print("second",log_username)
+    with engine.connect() as conn:
+        trans = conn.begin()
+        conn.execute(text("INSERT INTO fav (log_username, fav_post_id) VALUES (:log_username, :fav_post_id)"), {"log_username": log_username, "fav_post_id": fav_post_id})
+        trans.commit()
+
