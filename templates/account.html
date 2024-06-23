@@ -9,7 +9,7 @@
     <style>
         .card {
           box-shadow: 0 8px 12px 0 rgba(0, 0, 0, 0.6);
-          max-width: 600px;
+          max-width: 500px;
           margin:45px auto; 
           text-align: center;
           font-family: arial;
@@ -117,7 +117,7 @@
 
         <div class="card" >
           <img src="static/user3.jpg" style="width:100%">
-          <h1>{{username}}</h1>
+          <h1 style="color: #833AB4;">{{username}}</h1>
           <h2> Number of liked posts: {{NoFavoritePost}} </h2>
           <form action="/logout" method="get">
               <button type="submit">Logout</button>
