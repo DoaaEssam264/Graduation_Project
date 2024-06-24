@@ -24,6 +24,15 @@
                 </div>
                 <input type="hidden" name="form_type" value="login">
                 <input type="submit" value="Login" class="btn">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
                 <p class="social-text">Or Sign in with social platform</p>
                 <div class="social-media">
                     <a href="#" class="social-icon">
@@ -59,6 +68,15 @@
                 </div>
                 <input type="hidden" name="form_type" value="register">
                 <input type="submit" value="Sign up" class="btn">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
                 <p class="social-text">Or Sign in with social platform</p>
                 <div class="social-media">
                     <a href="#" class="social-icon">

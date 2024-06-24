@@ -1,3 +1,4 @@
+import re
 from flask import Flask, render_template, request, url_for, redirect ,session,flash
 from database import load_homepage_random_recommendations,load_search_results,add_user,load_user,get_cleaned_categories,get_pages_of_a_certain_category,get_favorite_posts,add_post_to_favorites,number_of_fav_posts,remove_post,show_product_func
 from flask_bcrypt import Bcrypt
@@ -51,14 +52,24 @@ def register():
             email=request.form.get('register_email')
             password = request.form.get('register_password')
             hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+            # Validation checks
+            # if not re.match(r'[^@]+@[^@]+\.[^@]+', email):
+            #     flash('Invalid email address!')
+            #     return redirect(url_for('register'))
+            # elif not re.match(r'[A-Za-z0-9]+', username):
+            #     flash('Username must contain only characters and numbers!')
+            #     return redirect(url_for('register'))
+            # elif not username or not password or not email:
+            #     flash('Please fill out the form!')
+            #     return redirect(url_for('register'))
             check=load_user(username)
             if check:
-                # Add error message
-                return  redirect(url_for('register', error='Username already exists'))
+                flash('* Username already exists!')
+                return redirect(url_for('register'))
                 # return render_template('signup_login.html', form_type=form_type, error='Username already exists')
             else:
                 add_user(username, email, hashed_password)
-                return redirect(url_for('home_page'))
+                return redirect(url_for('register'))
         elif form_type == 'login':
             username = request.form.get('login_username')
             password = request.form.get('login_password')
@@ -72,10 +83,11 @@ def register():
                     session['username'] = username
                     return redirect(url_for('home_page'))
                 else:
-                        return redirect(url_for('register'))
-                        #print('user's password wrong')
-            else:
+                    flash('* Incorrect password!', 'error')
                     return redirect(url_for('register'))
+            else:
+                flash('* Username not found!', 'error')
+                return redirect(url_for('register'))
                 #print('wrong username')
     return render_template('signup_login.html')
         
