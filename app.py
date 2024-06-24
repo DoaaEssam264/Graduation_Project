@@ -36,12 +36,15 @@ def accountpage():
         return render_template('account.html',categories=cleaned_categories,username=username,NoFavoritePost=NoFavoritePost)
     return  redirect(url_for('register'))
 
-# @app.route("/chatbot")
-# def chatbot():
-#     if 'loggedin' in session:
-#         cleaned_categories = get_cleaned_categories()
-#         return render_template('Favorite.html',categories=cleaned_categories)
-#     return  redirect(url_for('register'))
+@app.route("/chatbot")
+def chatbot():
+    if 'loggedin' not in session:
+        return redirect(url_for('register'))
+    return '', 204 
+    # if 'loggedin' in session:
+    #     cleaned_categories = get_cleaned_categories()
+    #     return render_template('Favorite.html',categories=cleaned_categories)
+    # return  redirect(url_for('register'))
 
 @app.route("/register", methods=['GET','POST'])
 def register():

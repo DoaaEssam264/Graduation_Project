@@ -7,10 +7,12 @@
     <title>Home</title>
     <link rel="stylesheet" href="static/Home.css" />
     <link rel="stylesheet" href="static/Home2.css" />
+    <link rel="stylesheet" href="static/chatbot.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
     />
+    <script src="static/chatbot.js" defer></script>
   </head>
   <body>
     <div class="wrapper">
@@ -40,7 +42,7 @@
                 {% endfor %}
               </ul>
             </li>
-            <li><a href="#">Chatbot</a></li>
+            <!-- <li><a href="#">Chatbot</a></li> -->
             <li><a href="/accountpage">Account</a></li>
           </ul>
         </div>
@@ -102,6 +104,29 @@
         </div>
       </div>
       {% endfor %}
+    </div>
+    <!-- "/chatbot" -->
+    <form action="/chatbot" >
+      <button type="submit" class="chatbot-toggler">
+        <span class="material-symbols-rounded">Bot</span>
+        <span class="material-symbols-outlined">l</span>
+      </button>
+    </form>
+    <div class="chatbot">
+      <header>
+        <h2>Chatbot</h2>
+        <span class="close-btn material-symbols-outlined">close</span>
+      </header>
+      <ul class="chatbox">
+        <li class="chat incoming">
+          <span class="material-symbols-outlined">smart_toy</span>
+          <p>Hi there 👋<br>How can I help you today?</p>
+        </li>
+      </ul>
+      <div class="chat-input">
+        <textarea placeholder="Enter a message..." spellcheck="false" required></textarea>
+        <span id="send-btn" class="material-symbols-rounded">send</span>
+      </div>
     </div>
   </body>
 </html>
