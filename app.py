@@ -44,51 +44,41 @@ def accountpage():
 #     return  redirect(url_for('register'))
 
 @app.route("/register", methods=['GET','POST'])
-def register(): 
+def register():
     if request.method == 'POST':
         form_type = request.form.get('form_type')
-        if form_type == 'register':
+        if form_type == 'register':  # Handle sign-up form submission
             username = request.form.get('register_username')
-            email=request.form.get('register_email')
+            email = request.form.get('register_email')
             password = request.form.get('register_password')
             hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-            # Validation checks
-            # if not re.match(r'[^@]+@[^@]+\.[^@]+', email):
-            #     flash('Invalid email address!')
-            #     return redirect(url_for('register'))
-            # elif not re.match(r'[A-Za-z0-9]+', username):
-            #     flash('Username must contain only characters and numbers!')
-            #     return redirect(url_for('register'))
-            # elif not username or not password or not email:
-            #     flash('Please fill out the form!')
-            #     return redirect(url_for('register'))
-            check=load_user(username)
+
+            check = load_user(username)
             if check:
-                flash('* Username already exists!')
-                return redirect(url_for('register'))
-                # return render_template('signup_login.html', form_type=form_type, error='Username already exists')
+                flash('* Username already exists!', 'error_register')
+                return render_template('signup_login.html',form_type='register')                
             else:
                 add_user(username, email, hashed_password)
+                flash('You have successfully registered!', 'success_register')
                 return redirect(url_for('register'))
-        elif form_type == 'login':
+
+        elif form_type == 'login':  # Handle sign-in form submission
             username = request.form.get('login_username')
             password = request.form.get('login_password')
-            check=load_user(username)
+            check = load_user(username)
             if check:
                 if bcrypt.check_password_hash(check[1], password):
-                    # Create session data
                     session['loggedin'] = True
-                    session['id'] = session.get('id_counter', 1)
-                    session['id_counter'] = session['id'] + 1
                     session['username'] = username
+                    flash('Login successful!', 'success_login')
                     return redirect(url_for('home_page'))
                 else:
-                    flash('* Incorrect password!', 'error')
+                    flash('* Incorrect password!', 'error_login')
                     return redirect(url_for('register'))
             else:
-                flash('* Username not found!', 'error')
+                flash('* Username not found!', 'error_login')
                 return redirect(url_for('register'))
-                #print('wrong username')
+
     return render_template('signup_login.html')
         
 

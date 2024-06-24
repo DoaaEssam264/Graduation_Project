@@ -279,6 +279,14 @@ h3{
   .wrapper .search-box input{
     padding: 0 100px 0 15px;
   }
+  .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 70%;
+      width: 60%;
+      margin: 20px;
+  }
 }
 
 @media screen and (max-width: 900px){
@@ -318,6 +326,24 @@ h3{
   }
   .content .links li a.desktop-link{
     display: none;
+  }
+  .card {
+    box-shadow: 0 8px 12px 0 rgba(0, 0, 0, 0.6);
+    max-width: 300px;
+    margin:45px auto; 
+    text-align: center;
+    font-family: arial;
+    background-color: white; 
+    padding: 10px;
+    border-radius: 5px;
+  }
+  .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 70%;
+      width: 60%;
+      margin: 20px;
   }
 
   /* dropdown responsive code start */
@@ -370,7 +396,26 @@ h3{
   }
   .first{
     background-position: center;
-}}
+}
+  .card {
+    box-shadow: 0 8px 12px 0 rgba(0, 0, 0, 0.6);
+    max-width: 300px;
+    margin:45px auto; 
+    text-align: center;
+    font-family: arial;
+    background-color: white; 
+    padding: 10px;
+    border-radius: 5px;
+  }
+  .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 70%;
+      width: 60%;
+      margin: 20px;
+  }
+}
 
 @media only screen and (max-width: 768px) {
     .first h3 {
@@ -378,7 +423,26 @@ h3{
     }
     .first{
         background-position: center;
-} }
+} 
+  .card {
+    box-shadow: 0 8px 12px 0 rgba(0, 0, 0, 0.6);
+    max-width: 300px;
+    margin:45px auto; 
+    text-align: center;
+    font-family: arial;
+    background-color: white; 
+    padding: 10px;
+    border-radius: 5px;
+  }
+  .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 70%;
+      width: 60%;
+      margin: 20px;
+  }
+}
 /* css el fl html*/
 .card {
   box-shadow: 0 8px 12px 0 rgba(0, 0, 0, 0.6);
@@ -405,7 +469,8 @@ h2 {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100%; 
+    height: 70%;
+    width: 100%;
     margin: 20px;
 }
 
