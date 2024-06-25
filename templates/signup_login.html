@@ -35,6 +35,21 @@
                         {% endfor %}
                     {% endif %}
                 {% endwith %}
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            {% if category == 'error_register' %}
+                                <div class="alert alert-error">
+                                    {{ message }}
+                                </div>
+                            {% elif category == 'success_register' %}
+                                <div class="alert alert-success">
+                                    {{ message }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
                 <p class="social-text">Or Sign in with social platform</p>
                 <div class="social-media">
                     <a href="#" class="social-icon">
@@ -70,7 +85,7 @@
                 </div>
                 <input type="hidden" name="form_type" value="register">
                 <input type="submit" value="Sign up" class="btn">
-                {% with messages = get_flashed_messages(with_categories=true) %}
+                <!-- {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
                         {% for category, message in messages %}
                             {% if category == 'error_register' %}
@@ -84,10 +99,10 @@
                             {% endif %}
                         {% endfor %}
                     {% endif %}
-                {% endwith %}
-                <div class="alert alert-success">
+                {% endwith %} -->
+                <!-- <div class="alert alert-success">
                     {{ alert }}
-                </div>
+                </div> -->
                 <p class="social-text">Or Sign in with social platform</p>
                 <div class="social-media">
                     <a href="#" class="social-icon">
@@ -125,6 +140,10 @@
             </div>
         </div>
     </div>
+    <script>
+        
+    </script>
     <script src="static/app.js"></script>
+    
 </body>
 </html>

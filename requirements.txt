@@ -6,4 +6,4 @@ torch
 torchvision 
 sentence_transformers
 numpy
-
+transformers

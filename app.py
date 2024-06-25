@@ -1,13 +1,19 @@
-import re
-from flask import Flask, render_template, request, url_for, redirect ,session,flash
+from flask import Flask, render_template, request, url_for, redirect ,session,flash,jsonify
 from database import load_homepage_random_recommendations,load_search_results,add_user,load_user,get_cleaned_categories,get_pages_of_a_certain_category,get_favorite_posts,add_post_to_favorites,number_of_fav_posts,remove_post,show_product_func
 from flask_bcrypt import Bcrypt
 import os
+
+
+
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
 my_secret = os.environ['SECRET_KEY']
 app.secret_key = my_secret
+
+@app.route("/chat")
+def index():
+    return render_template('chatbot2.html')
 
 @app.route("/favorite", methods=['GET', 'POST'])
 def favorite():
@@ -62,7 +68,6 @@ def register():
                 return render_template('signup_login.html',form_type='register')                
             else:
                 add_user(username, email, hashed_password)
-                flash('You have successfully registered!', 'success_register')
                 return redirect(url_for('register'))
 
         elif form_type == 'login':  # Handle sign-in form submission
@@ -73,7 +78,6 @@ def register():
                 if bcrypt.check_password_hash(check[1], password):
                     session['loggedin'] = True
                     session['username'] = username
-                    flash('Login successful!', 'success_login')
                     return redirect(url_for('home_page'))
                 else:
                     flash('* Incorrect password!', 'error_login')
@@ -134,7 +138,6 @@ def show_product(post_id):
     post=show_product_func(post_id)
     return render_template('SHOW_product.html',
         categories=cleaned_categories,post=post)
-    
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0',debug=True)
