@@ -7,3 +7,4 @@ torchvision
 sentence_transformers
 numpy
 transformers
+groq

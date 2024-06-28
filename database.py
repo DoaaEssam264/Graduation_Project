@@ -1,8 +1,11 @@
 from sqlalchemy import create_engine, text
 import os
+import numpy as np
+import pandas as pd
+import tabulate
 from functions import get_similar_posts,clean_category
 
-db_connecton_uri = os.environ['db_connection_uri']
+db_connecton_uri = os.environ['db2']
 engine = create_engine(db_connecton_uri)
 
 #TO CHECK DB
@@ -11,6 +14,12 @@ engine = create_engine(db_connecton_uri)
 #     usernamess = [row for row in result.all()]
 # print(usernamess)
 
+
+def execute_postgresql_query(query):
+    with engine.connect() as conn:
+        result = conn.execute(text(query))
+        query_result = pd.DataFrame(result.fetchall(), columns=result.keys())
+    return query_result
 
 
 #LOAD RECOMENDED PAGES TO HOME PAGE
@@ -48,6 +57,7 @@ def get_cleaned_categories():
         categories = result.fetchall()
     cleaned_categories = []
     for row in categories:
+      if row[0] !="no_cat":
         category_list = eval(row[0])  # Assuming the categories are stored as a string representation of a list
         for category in category_list:
             cleaned_categories.append(clean_category(category).title())

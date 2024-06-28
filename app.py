@@ -1,15 +1,103 @@
 from flask import Flask, render_template, request, url_for, redirect ,session,flash,jsonify
-from database import load_homepage_random_recommendations,load_search_results,add_user,load_user,get_cleaned_categories,get_pages_of_a_certain_category,get_favorite_posts,add_post_to_favorites,number_of_fav_posts,remove_post,show_product_func
+import json
+import tabulate
+import sqlparse
+from database import load_homepage_random_recommendations,load_search_results,add_user,load_user,get_cleaned_categories,get_pages_of_a_certain_category,get_favorite_posts,add_post_to_favorites,number_of_fav_posts,remove_post,show_product_func,execute_postgresql_query
 from flask_bcrypt import Bcrypt
 import os
-
-
-
+from groq import Groq
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
 my_secret = os.environ['SECRET_KEY']
 app.secret_key = my_secret
+
+def chat_with_groq(client, prompt, model, response_format):
+    completion = client.chat.completions.create(
+        model=model,
+        messages=[{
+            "role": "user",
+            "content": prompt
+        }],
+        response_format=response_format)
+
+    return completion.choices[0].message.content
+
+def get_summarization(client, user_question, df, model):
+    """
+    This function generates a summarization prompt based on the user's question and the resulting data. 
+    It then sends this summarization prompt to the Groq API and retrieves the AI's response.
+
+    Parameters:
+    client (Groqcloud): The Groq API client.
+    user_question (str): The user's question.
+    df (DataFrame): The DataFrame resulting from the SQL query.
+    model (str): The AI model to use for the response.
+
+    Returns:
+    str: The content of the AI's response to the summarization prompt.
+    """
+    prompt = '''
+      A user asked the following question pertaining to local database tables:
+
+      {user_question}
+
+      To answer the question, a dataframe was returned:
+
+      Dataframe:
+      {df}
+
+    In a few sentences, summarize the data in the table as it pertains to the original user question. Avoid qualifiers like "based on the data" and do not comment on the structure or metadata of the table itself
+  '''.format(user_question=user_question, df=df)
+
+    # Response format is set to 'None'
+    return chat_with_groq(client, prompt, model, None)
+
+
+model = "llama3-70b-8192"
+
+# Get the Groq API key and create a Groq client
+groq_api_key = os.getenv('GROQ_API_KEY')
+client = Groq(api_key=groq_api_key)
+
+print("Welcome to the InstaSearch Chatbot!")
+
+
+# Load the base prompt
+with open('prompt/base_prompt.txt', 'r') as file:
+    base_prompt = file.read()
+
+while True:
+    # Get the user's question
+    user_question = input("Ask a question: ")
+
+    if user_question:
+        # Generate the full prompt for the AI
+        full_prompt = base_prompt.format(user_question=user_question)
+
+        # Get the AI's response. Call with '{"type": "json_object"}' to use JSON mode
+        llm_response = chat_with_groq(client, full_prompt, model,
+                                      {"type": "json_object"})
+        print("llm_response:", llm_response)
+
+        result_json = json.loads(llm_response)
+        if 'sql' in result_json:
+            sql_query = result_json['sql']
+            results_df = execute_postgresql_query(sql_query)
+
+            formatted_sql_query = sqlparse.format(sql_query,
+                                                  reindent=True,
+                                                  keyword_case='upper')
+
+            print("```sql format \n" + formatted_sql_query + "\n```")
+            print(results_df.to_markdown(index=False))
+
+            summarization = get_summarization(client, user_question,
+                                              results_df, model)
+            print(summarization)
+        elif 'error' in result_json:
+            print("ERROR:", 'Could not generate valid SQL for this question')
+            print(result_json['error'])
 
 @app.route("/chat")
 def index():

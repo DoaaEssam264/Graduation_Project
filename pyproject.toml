@@ -22,6 +22,8 @@ flask-login = "^0.6.3"
 flask-wtf = "^1.2.1"
 wtforms = "^3.1.2"
 transformers = "^4.41.2"
+sqlparse = "^0.5.0"
+tabulate = "^0.9.0"
 
 [build-system]
 requires = ["poetry-core"]
