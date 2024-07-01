@@ -4,14 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='chatbot.css') }}" />
-    <script src="{{ url_for('static', filename='chatbot.js') }}" defer></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='Home.css') }}" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous"/>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
     />
-  
+    <script src="{{ url_for('static', filename='chatbot.js') }}" defer></script>
     <title>Category Search</title>
 </head>
 <body>
@@ -74,7 +73,7 @@
       <div class="card-container">
         {% for page in category_pages: %}
           <div class="card">
-            <img src="{{page.profilepicurlhd}}" >
+            <img src="{{page.image}}" >
             <div class="card-content">
                 <h3>{{page.page_username}}</h3> 
                 <p class="rate">{{page.rate}} <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i></p>
@@ -86,12 +85,11 @@
         {% endfor %}
 
 </div>
-  <form action="/chatbot" >
-    <button type="submit" class="chatbot-toggler">
-      <span class="material-symbols-rounded">Bot</span>
-      <span class="material-symbols-outlined">l</span>
-    </button>
-  </form>
+  <!-- "/chatbot" -->
+  <button class="chatbot-toggler">
+    <span class="material-symbols-rounded">mode_comment</span>
+    <span class="material-symbols-outlined">close</span>
+  </button>
   <div class="chatbot">
     <header>
       <h2>Chatbot</h2>

@@ -6,10 +6,11 @@
     <meta name="viewport" content="width=device-width">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous"/>
     <link rel="stylesheet" href="static/chatbot.css" />
-    <script src="static/chatbot.js" defer></script>
     <link rel="stylesheet" href="static/Home.css">
     <link rel="stylesheet" href="static/Product_Search.css">
     <title>Products Search</title>
+    <!-- <script src="app.js"></script> -->
+    <script src="static/chatbot.js" defer></script>
 </head>
 <body>
   <div class="wrapper">
@@ -103,12 +104,13 @@
             {% endfor %}
         {% endif %}
     </div>
-  <form action="/chatbot" >
-    <button type="submit" class="chatbot-toggler">
-      <span class="material-symbols-rounded">Bot</span>
-      <span class="material-symbols-outlined">l</span>
-    </button>
-  </form>
+
+
+  <!-- "/chatbot" -->
+  <button class="chatbot-toggler">
+    <span class="material-symbols-rounded">mode_comment</span>
+    <span class="material-symbols-outlined">close</span>
+  </button>
   <div class="chatbot">
     <header>
       <h2>Chatbot</h2>
@@ -125,7 +127,7 @@
       <span id="send-btn" class="material-symbols-rounded">send</span>
     </div>
   </div>
-    <script src="app.js"></script>
+    
 </body>
 </html>
 

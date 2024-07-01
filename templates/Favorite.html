@@ -6,9 +6,11 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous"/>
     <link rel="stylesheet" href="static/chatbot.css" />
     <script src="static/chatbot.js" defer></script>
+    <link rel="stylesheet" href="static/chatbot.css">
     <link rel="stylesheet" href="static/Product_Search.css">
     <link rel="stylesheet" href="static/Home.css">
     <title>Favorite</title>
+    <script src="static/chatbot.js" defer></script>
 </head>
 <body>
   <div class="wrapper">
@@ -86,28 +88,26 @@
       {% endfor %}
     </div>
   
-    <!-- "/chatbot" -->
-    <form action="/chatbot" >
-      <button type="submit" class="chatbot-toggler">
-        <span class="material-symbols-rounded">Bot</span>
-        <span class="material-symbols-outlined">l</span>
-      </button>
-    </form>
-    <div class="chatbot">
-      <header>
-        <h2>Chatbot</h2>
-        <span class="close-btn material-symbols-outlined">close</span>
-      </header>
-      <ul class="chatbox">
-        <li class="chat incoming">
-          <span class="material-symbols-outlined">smart_toy</span>
-          <p>Hi there 👋<br>How can I help you today?</p>
-        </li>
-      </ul>
-      <div class="chat-input">
-        <textarea placeholder="Enter a message..." spellcheck="false" required></textarea>
-        <span id="send-btn" class="material-symbols-rounded">send</span>
-      </div>
+  <!-- "/chatbot" -->
+  <button class="chatbot-toggler">
+    <span class="material-symbols-rounded">mode_comment</span>
+    <span class="material-symbols-outlined">close</span>
+  </button>
+  <div class="chatbot">
+    <header>
+      <h2>Chatbot</h2>
+      <span class="close-btn material-symbols-outlined">close</span>
+    </header>
+    <ul class="chatbox">
+      <li class="chat incoming">
+        <span class="material-symbols-outlined">smart_toy</span>
+        <p>Hi there 👋<br>How can I help you today?</p>
+      </li>
+    </ul>
+    <div class="chat-input">
+      <textarea placeholder="Enter a message..." spellcheck="false" required></textarea>
+      <span id="send-btn" class="material-symbols-rounded">send</span>
     </div>
+  </div>
 </body>
 </html>

@@ -88,13 +88,13 @@
     <div class="card-container">
       {% for recommendation in recommendations %}
       <div class="card">
-        <img src=' />
+          <img src="{{ recommendation.image }}"/>
         <div class="card-content">
           <h3>{{ recommendation.page_username }}</h3>
           <p class="rate">
             {{ recommendation.rate }} <i class="fa fa-star"></i>
           </p>
-          <p>{{ recommendation.biography}}</p>
+          <p>{{ recommendation.bio}}</p>
           <p class="btn2">
             {{ recommendation.followerscount}} <i class="fas fa-users"></i>
           </p>
@@ -108,26 +108,24 @@
   
     
     <!-- "/chatbot" -->
-      <button type="submit" class="chatbot-toggler">
-          <span class="material-symbols-rounded">Bot</span>
-          <span class="material-symbols-outlined">l</span>
-      </button>
+    <button class="chatbot-toggler">
+      <span class="material-symbols-rounded">mode_comment</span>
+      <span class="material-symbols-outlined">close</span>
+    </button>
     <div class="chatbot">
       <header>
-          <h2>Chatbot</h2>
-          <span class="close-btn material-symbols-outlined">close</span>
+        <h2>Chatbot</h2>
+        <span class="close-btn material-symbols-outlined">close</span>
       </header>
       <ul class="chatbox">
-          <li class="chat incoming">
-              <span class="material-symbols-outlined">smart_toy</span>
-              <p>Hi there 👋<br>How can I help you today?</p>
-          </li>
+        <li class="chat incoming">
+          <span class="material-symbols-outlined">smart_toy</span>
+          <p>Hi there 👋<br>How can I help you today?</p>
+        </li>
       </ul>
       <div class="chat-input">
-        <form id="chat-form" action="/chatbot" method="POST">
-            <textarea placeholder="Enter a message..." spellcheck="false" required></textarea>
-            <span id="send-btn" class="material-symbols-rounded">send</span>
-        </form>
+        <textarea placeholder="Enter a message..." spellcheck="false" required></textarea>
+        <span id="send-btn" class="material-symbols-rounded">send</span>
       </div>
     </div>
   </body>

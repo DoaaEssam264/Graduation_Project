@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="static/SHOW_product.css"> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
     <title>Product Details</title>
+    <script src="{{ url_for('static', filename='chatbot.js') }}" defer></script>
 </head>
 <body>
   <div class="wrapper">
@@ -92,12 +93,10 @@
     </div>
   
   <!-- "/chatbot" -->
-  <form action="/chatbot" >
-    <button type="submit" class="chatbot-toggler">
-      <span class="material-symbols-rounded">Bot</span>
-      <span class="material-symbols-outlined">l</span>
-    </button>
-  </form>
+  <button class="chatbot-toggler">
+    <span class="material-symbols-rounded">mode_comment</span>
+    <span class="material-symbols-outlined">close</span>
+  </button>
   <div class="chatbot">
     <header>
       <h2>Chatbot</h2>

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for, redirect ,session,flash,jsonify
+from flask import Flask, render_template, request, url_for, redirect ,session,flash,jsonify,send_file
 from database import load_homepage_random_recommendations,load_search_results,add_user,load_user,get_cleaned_categories,get_pages_of_a_certain_category,get_favorite_posts,add_post_to_favorites,number_of_fav_posts,remove_post,show_product_func,generate_gemini_response
 from flask_bcrypt import Bcrypt
 import os
@@ -12,33 +12,13 @@ bcrypt = Bcrypt(app)
 my_secret = os.environ['SECRET_KEY']
 app.secret_key = my_secret
 
-db_connecton_uri = os.environ['db2']
-engine = create_engine(db_connecton_uri)
 
-app = Flask(__name__)
-
-@app.route('/image/<username>', methods=['GET'])
-def get_image(username):
-    with engine.connect() as conn:
-        result = conn.execute(text("SELECT image FROM pages WHERE page_username = :username"), 
-        {'username': username})
-        row = result.fetchone()
-        if row and row['image']:
-            return send_file(io.BytesIO(row['image']), mimetype='image/jpeg')
-        else:
-            return jsonify({'error': 'Image not found'}), 404
-
-
-@app.route('/')
-def index():
-    with engine.connect() as conn:
-        result = conn.execute(text("SELECT page_username, rate, biography, followerscount, url FROM pages"))
-        pages = [dict(row) for row in result]
-    return render_template('index.html', recommendations=pages)
-
-if __name__ == '__main__':
-    app.run(debug=True)
-
+@app.route('/process', methods=['POST'])
+def process():
+    data = request.get_json()
+    text = data.get('text', '')
+    ans = generate_gemini_response(text)
+    return jsonify({'response': ans})
 
 @app.route("/favorite", methods=['GET', 'POST'])
 def favorite():
@@ -71,20 +51,6 @@ def home_page():
     cleaned_categories = get_cleaned_categories()
     return render_template('Home.html', recommendations=pages,categories=cleaned_categories)
 
-
-@app.route('/chatbot', methods=['POST'])
-def chatbot():
-    user_input = request.json.get('user_input')
-    return render_template('Home.html', user_input=user_input)
-    # response = generate_gemini_response(user_input)
-    # return jsonify({'response': response})
-    
-#     #     cleaned_categories = get_cleaned_categories()
-#     #     result=generate_gemini_response()
-#     # if 'loggedin' in session:
-#     #     cleaned_categories = get_cleaned_categories()
-#     #     return render_template('Favorite.html',categories=cleaned_categories)
-#     return  redirect(url_for('register'))
 
 @app.route("/register", methods=['GET','POST'])
 def register():

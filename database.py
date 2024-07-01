@@ -4,16 +4,30 @@ import numpy as np
 import pandas as pd
 from functions import get_similar_posts,clean_category
 import google.generativeai as genai
+import io
+import PIL.Image as Image
+from io import BytesIO
+import base64
+
 
 db_connecton_uri = os.environ['db2']
 engine = create_engine(db_connecton_uri)
-genai.configure(api_key='api_key')
+
+api_key = os.environ['api_key']
+genai.configure(api_key=api_key)
 model = genai.GenerativeModel(model_name = "gemini-pro")
 
+
+def clean_sql_query(query):
+    if query.startswith("[SQL: "):
+        query = query[6:]  # Remove '[SQL: ' from the start
+    if query.endswith("]"):
+        query = query[:-1]  # Remove ']' from the end
+    return query
+
+    
 def generate_gemini_response(user_input):
-    if user_input:
-        return user_input
-    prompt1="""You are an expert in converting English user questions to PostgreSQL code:
+    prompt1 = """You are an expert in converting English user questions to PostgreSQL code:
 
     The first PostgreSQL table, named `posts`, has the following columns:
     - caption (TEXT): The caption of the post contains the product being selled in the post like lipgloss,jeans, hair serum, sunblock,eyliner,laptops,tshirts,tops and more.
@@ -87,11 +101,12 @@ def generate_gemini_response(user_input):
     * If the question cannot be answered with the available tables, return 'no data'.
     * Ensure that the entire output is returned on a single line as text, the SQL query only without any other details like SQL tags or \n.
     * Keep your query as simple and straightforward as possible; do not use subqueries.
+    * Don't start your answer with [SQL: SELECT ...  ],
+    Answer with : Select ...
 
 
 
     """
-
 
     prompt2 = ''' You are a Question Answering bot in a website that answers user questions about pages and the products they include.
 
@@ -102,21 +117,28 @@ def generate_gemini_response(user_input):
           To answer the question, a dataframe was returned:
 
           Dataframe:
-          {df}
+            {df}
 
         In a few sentences, summarize the data in the table as to answers to the original user question and return the usernames or pagenames and pageurls or url. Avoid qualifiers like "based on the data" and do not comment on the structure or metadata of the table itself
         and be friendly with the user and if df returned is no data return "be more specific", dont give information about tables or df just be general. if user asked about pages make sure to return the pagename and its url.
       '''
-    categories=get_cleaned_categories()
-    query =  model.generate_content(prompt1.format(user_question=user_input, categories=categories))
-    ans=""
-    df=query.text
+
+
+
+    categories = get_cleaned_categories()
+    query = model.generate_content(
+        prompt1.format(user_question=user_input, categories=categories))
+    print(query.text)
+    query=clean_sql_query(query.text)
+    ans = ""
+    df = query
     if df != "no data":
-      with engine.connect() as conn:
-          result = conn.execute(text(query.text))
-          df = pd.DataFrame(result.fetchall(), columns=result.keys())
-    ans=model.generate_content(prompt2.format(user_question=user_input, df=df)).text
-    return jsonify({'response': ans})
+        with engine.connect() as conn:
+            result = conn.execute(text(query))
+            df = pd.DataFrame(result.fetchall(), columns=result.keys())
+    ans = model.generate_content(prompt2.format(user_question=user_input, df=df)).text
+    # return ans
+    return ans
 
 
 #LOAD RECOMENDED PAGES TO HOME PAGE
@@ -124,10 +146,16 @@ def load_homepage_random_recommendations():
     with engine.connect() as conn:
         result = conn.execute(
             text("SELECT * FROM pages ORDER BY RANDOM() LIMIT 4"))
-        pages = []
-        for page in result.all():
-            pages.append(page._mapping)
-        return pages
+        rand = result.fetchall()
+        columns = result.keys()
+        pages = [dict(zip(columns, row)) for row in rand]
+        for page in pages:
+            image_data = page.get('image')
+            if image_data:
+                base64_image = base64.b64encode(image_data).decode('utf-8')
+                page['image'] = f"data:image/jpeg;base64,{base64_image}"
+          
+    return pages
 
 
 #LOAD PAGES TO USER SEARCH QUERY
@@ -188,10 +216,14 @@ def get_pages_of_a_certain_category(category):
           WHERE category LIKE :specific_category"""),     
           {'specific_category': specific_category})
           rows = result.fetchall()
-    # Convert the rows into a list of dictionaries
-    pages = [row._mapping for row in rows]
+          columns = result.keys()
+          pages = [dict(zip(columns, row)) for row in rows]
+          for page in pages:
+              image_data = page.get('image')
+              if image_data:
+                  base64_image = base64.b64encode(image_data).decode('utf-8')
+                  page['image'] = f"data:image/jpeg;base64,{base64_image}"
     return pages
-
 
 def load_user(login_username):
     with engine.connect() as conn:
