@@ -61,7 +61,7 @@ body.show-chatbot .chatbot {
   transform: scale(1);
 }
 .chatbot header {
-  padding: 16px 0;
+  padding: 13px 0;
   position: relative;
   text-align: center;
   color: #fff;
