@@ -81,7 +81,7 @@
         {% else %}
             {% for post in posts %}
             <div class="box">
-               <a href="/show_product/{{post.post_id}}"><img src="{{ post.post_image}}"> </a>
+               <a href="/show_product/{{post.post_id}}"><img src="{{ post.image }}"> </a>
                 <h2>{{ post.pagename }}</h2>
                 <p>{{ post.original_caption }}</p>
                 {% if post.likescount ==-1 %}
@@ -130,4 +130,3 @@
     
 </body>
 </html>
-

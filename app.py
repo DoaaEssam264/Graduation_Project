@@ -87,7 +87,7 @@ def register():
                 return redirect(url_for('register'))
 
     return render_template('signup_login.html')
-        
+
 @app.route('/logout')
 def logout():
     # Remove session data, this will log the user out
@@ -108,7 +108,7 @@ def search_results():
     # data =request.form
     cleaned_categories = get_cleaned_categories()
     posts=load_search_results(data['user_input_to_search_bar'])
-    #if loggedin: sa3etha hoty fel table el search bta3o
+    #if loggedin: sa3etha hoty fel table el serch bta3o
     dict_len=len(posts)
     return render_template('Product_Search.html', posts=posts,categories=cleaned_categories,dict_len=dict_len)
 

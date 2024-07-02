@@ -15,129 +15,174 @@ engine = create_engine(db_connecton_uri)
 
 api_key = os.environ['api_key']
 genai.configure(api_key=api_key)
-model = genai.GenerativeModel(model_name = "gemini-pro")
+
+model = genai.GenerativeModel("gemini-1.5-flash")
+model2 =genai.GenerativeModel("gemini-1.5-flash")
+base_model = genai.GenerativeModel('gemini-1.5-flash')
+chat = base_model.start_chat(history=[])
+print(chat.history)
 
 
 def clean_sql_query(query):
-    if query.startswith("[SQL: "):
-        query = query[6:]  # Remove '[SQL: ' from the start
+    if query.startswith("[SQL:"):
+        query = query[5:]  # Remove '[SQL: ' from the start
     if query.endswith("]"):
         query = query[:-1]  # Remove ']' from the end
     return query
 
-    
+
 def generate_gemini_response(user_input):
-    prompt1 = """You are an expert in converting English user questions to PostgreSQL queries:
+    
+    prompt1 = """ You are an expert in converting English user questions to PostgreSQL code:
 
-    The first PostgreSQL table, named `posts`, has the following columns:
-    - caption (TEXT): The caption of the post contains the product being selled in the post like lipgloss,jeans, hair serum, sunblock,eyliner,laptops,tshirts,tops and more.
-    - commentscount (INT4): The number of comments on the post
-    - likescount (INT8): The number of likes on the post
-    - commentscount (INT4): The number of comments on the post.
-    - likescount (INT8): The number of likes on the post.
-    - timestamp (VARCHAR): The timestamp when the post was created.
-    - pagename (VARCHAR): The username of the page.
-    - category (VARCHAR): The category the post belongs to.
-    - score (FLOAT8): The score indicating how accurately the post belongs to this category.
-    - rating (FLOAT8): The rating of the product.
-    - bio (VARCHAR): The bio of the page, sometimes containing information like location or slogan or branches of stores .
-    - posturl (VARCHAR): The URL of the post.
-    - product (VARCHAR): contains the product being selled in the post.
-    - pageurl (VARCHAR): The URL of the page's profile.
+        The first PostgreSQL table, named `posts`, has the following columns:
+        - caption (TEXT): The caption of the post contains the product being selled in the post like lipgloss,jeans, hair serum, sunblock,eyliner,laptops,tshirts,tops and more.
+        - commentscount (INT4): The number of comments on the post
+        - likescount (INT8): The number of likes on the post
+        - commentscount (INT4): The number of comments on the post.
+        - likescount (INT8): The number of likes on the post.
+        - timestamp (VARCHAR): The timestamp when the post was created.
+        - pagename (VARCHAR): The username of the page.
+        - category (VARCHAR): The category the post belongs to.
+        - score (FLOAT8): The score indicating how accurately the post belongs to this category.
+        - rating (FLOAT8): The rating of the product.
+        - bio (VARCHAR): The bio of the page, sometimes containing information like location or slogan or branches of stores .
+        - posturl (VARCHAR): The URL of the post.
+        - product (VARCHAR): contains the product being selled in the post.
+        - pageurl (VARCHAR): The URL of the page's profile.
 
-    The second PostgreSQL table, named `pages`, has the following columns:
-    - verified (BOOL): Indicates if the page is verified.
-    - biography (VARCHAR): The biography of the page, sometimes containing information like location or slogan or branches of stores .
-    - isbusinessaccount (BOOL): Indicates if the account is a business account.
-    - followerscount (INT8): The number of followers the page has.
-    - postscount (INT4): The number of posts the page has created.
-    - joinedrecently (BOOL): Indicates if the page has joined recently.
-    - page_username (VARCHAR): The username of the page.
-    - rate (FLOAT8): The rate associated with the page.
-    - category (VARCHAR): A list of categories the page has, which are {categories}, these only are the categories in the database dont query on others but them.
-    - url (VARCHAR): The URL of the page's profile.
+        The second PostgreSQL table, named `pages`, has the following columns:
+        - verified (BOOL): Indicates if the page is verified.
+        - biography (VARCHAR): The biography of the page, sometimes containing information like location or slogan or branches of stores .
+        - isbusinessaccount (BOOL): Indicates if the account is a business account.
+        - followerscount (INT8): The number of followers the page has.
+        - postscount (INT4): The number of posts the page has created.
+        - joinedrecently (BOOL): Indicates if the page has joined recently.
+        - page_username (VARCHAR): The username of the page.
+        - rate (FLOAT8): The rate associated with the page.
+        - category (VARCHAR): A list of categories the page has, which are {categories}, these only are the categories in the database dont query on others but them.
+        - url (VARCHAR): The URL of the page's profile.
 
-    Examples:
-    1. which pages sell mom-fit jeans?
-    SELECT DISTINCT * FROM posts INNER JOIN pages ON posts.pagename = pages.page_username WHERE (caption LIKE '%mom-fit jeans%' OR caption LIKE '%mom fit jeans%' OR caption LIKE '%mom-fit jean%' OR caption LIKE '%mom fit jean%' OR caption LIKE '%momfit jeans%' OR caption LIKE '%momfit jean%' OR posts.category = '%mom-fit jeans%');
-
-    2.Recommend pages that sell clothes?
-    SELECT DISTINCT* FROM pages WHERE category like '%clothing%' ORDER BY rate DESC LIMIT 5;
-
-    3.  what is the best page that sells sets?
-    SELECT DISTINCT * FROM pages INNER JOIN pages ON posts.pagename = pages.page_username WHERE posts.caption like %sets% OR posts.caption like %set% ORDER BY pages.rate DESC, (posts.likescount + posts.commentscount) DESC LIMIT 1;
-
-    4.tell me pages that sell rings?
-    SELECT DISTINCT * FROM posts WHERE caption LIKE '%rings%' OR caption LIKE '%ring%';
-
-    5.page that has bags
-    SELECT DISTINCT *FROM posts INNER JOIN pages ON posts.pagename = pages.page_username WHERE category LIKE '%bags%' OR category LIKE '% bag%' OR caption LIKE '%bags%' OR caption LIKE '%bag%';
-
-    6.pages that has cross-bags
-    SELECT DISTINCT * FROM posts WHERE caption LIKE '% cross-bags%' OR caption LIKE '%cross bag%' OR caption LIKE '%cross bags%' OR caption LIKE '%cross-bag%' ;
-
-    7.pages that has beach mats
-    SELECT DISTINCT * FROM posts WHERE caption LIKE '%beach mats%' OR caption LIKE '%beachy mats%' OR caption LIKE '%beaches mats%' OR caption LIKE '%beachy mat%' ;
+        Examples:
+        1. which pages sell mom-fit jeans?
+        SELECT pages.page_username, pages.url FROM pages INNER JOIN posts ON pages.page_username = posts.pagename WHERE (posts.product LIKE '%mom-fit jeans%'
+         OR posts.caption LIKE '%mom-fit jeans%'
+         OR posts.caption LIKE '%mom fit jeans%'
+         OR posts.caption LIKE '%mom-fit jean%'
+         OR posts.caption LIKE '%mom fit jean%'
+         OR posts.caption LIKE '%momfit jeans%'
+         OR posts.caption LIKE '%momfit jean%'
+         OR posts.category LIKE '%mom-fit jeans%')
+         OR posts.product LIKE '%mom fit jeans%,
+         OR posts.product LIKE '%mom-fit jean%'
+         OR posts.product LIKE '%mom fit jean%'
+         OR posts.product LIKE '%momfit jeans%'
+         OR posts.product LIKE '%momfit jean%';
 
 
+        2.Recommend pages that sell clothes?
+        SELECT pages.page_username, pages.url FROM pages INNER JOIN posts ON pages.page_username = posts.pagename WHERE 
+        (posts.category LIKE '%clothing%' OR posts.product LIKE '%clothing%' OR posts.caption LIKE '%clothing%');
 
 
-
-    Rules for querying the dataset:
-    * if the question is searching for a product name then do the query with (like)from column caption
-    * if you queried using category from posts only order by score desc
-    * if you queried using category from pages use like
-    * select all usually
-    *if the what u are searching for is not in this category list {categories}, search in caption from table posts instead
-    * make INNER JOIN pages ON posts.pagename = pages.page_username if you are using category from pages and caption from posts in one query
-
-    Question:
-    --------
-    {user_question}
-    --------
-
-    Reminder: Generate a PostgreSQL SQL query to answer the question:
-    * Ensure that the query is flexible enough to handle synonyms or similar terms (e.g., searching for "beach mats" should also retrieve results for "beachy mat").
-    * If the question cannot be answered with the available tables, return 'no data'.
-    * Ensure that the entire output is returned on a single line as text, the SQL query only without any other details like SQL tags or \n.
-    * Keep your query as simple and straightforward as possible; do not use subqueries.
-    * Don't start your answer with [SQL: SELECT ...  ],
-    Answer with : Select ...
+        3.  what is the best page that sells sets?
+        SELECT pages.page_username, pages.url FROM pages INNER JOIN posts ON pages.page_username = posts.pagename WHERE (posts.product LIKE '%sets%' OR posts.product LIKE '%set%' OR posts.caption like %sets% OR posts.caption like %set%) ORDER BY pages.rating DESC LIMIT 1;
 
 
 
-    """
+        4.tell me pages that sell rings?
+        SELECT pages.page_username, pages.url FROM  pages INNER JOIN posts ON pages.page_username = posts.pagename WHERE (posts.product LIKE '%rings%' OR posts.product LIKE '%ring%' OR posts.caption LIKE '%rings%' OR posts.caption LIKE '%ring%');
 
-    prompt2 = ''' You are a Question Answering bot in a website that answers user questions about pages and the products they include.
 
-          A user asked the following question and this is the dataframe that you should answer from:
 
-          {user_question}
+        5.page that has bags
+        SELECT pages.page_username, pages.url FROM pages INNER JOIN posts ON pages.page_username = posts.pagename WHERE (posts.product LIKE '%bags%' OR posts.product LIKE '%bag%' OR posts.category LIKE '%bags%' OR posts.category LIKE '% bag%' OR posts.caption LIKE '%bags%');
 
-          To answer the question, a dataframe was returned:
 
-          Dataframe:
-            {df}
 
-        In a few sentences, summarize the data in the table as to answers to the original user question and return the usernames or pagenames and pageurls or url. Avoid qualifiers like "based on the data" and do not comment on the structure or metadata of the table itself
-        and be friendly with the user and if df returned is no data return "be more specific", dont give information about tables or df just be general. if user asked about pages make sure to return the pagename and its url.
-      '''
+        6.pages that has cross-bags
+        SELECT pages.page_username, pages.url FROM pages INNER JOIN posts ON pages.page_username = posts.pagename WHERE (posts.product LIKE '%cross-bags%' OR posts.caption LIKE '% cross-bags%' OR posts.product LIKE '%cross bag%' OR posts.product LIKE '%cross bags%' OR posts.product LIKE '%cross-bag%' OR posts.caption LIKE '%cross bag%' OR posts.caption LIKE '%cross bags%' OR posts.caption LIKE '%cross-bag%';
+
+
+
+        7.pages that has beach mats
+        SELECT pages.page_username, pages.url FROM pages INNER JOIN posts ON pages.page_username = posts.pagename WHERE (posts.caption LIKE '%beach mats%' OR posts.caption LIKE '%beach mats%' OR posts.caption LIKE '%beachy mats%' OR posts.caption LIKE '%beaches mats%' OR posts.caption LIKE '%beachy mat%' OR posts.product LIKE '%beach mats%' OR posts.product LIKE '%beach mats%' OR posts.product LIKE '%beachy mats%' OR posts.product LIKE '%beaches mats%' OR posts.product LIKE '%beachy mat%';
+
+
+
+
+
+        Rules for querying the dataset:
+        * if the question is searching for a product name query with like from column caption
+        * if you queried using category from posts only order by score desc
+        * if you queried using category from pages use like
+        * select all usually
+        *if the what u are searching for is not in this category list {categories}, search in caption from table posts instead
+        * make INNER JOIN pages ON posts.pagename = pages.page_username if you are using category from pages and caption from posts in one query
+
+        Question:
+        --------
+        {user_question}
+        --------
+
+        Reminder: Generate a PostgreSQL SQL query to answer the question:
+        * Ensure that the query is flexible enough to handle synonyms or similar terms (e.g., searching for "beach mats" should also retrieve results for "beachy mat").
+        * If the question cannot be answered with the available tables, return 'No data' and the user question itself.
+        * Ensure that the entire output is returned on a single line as text, the SQL query only without any other details like SQL tags or \n.
+        * Keep your query as simple and straightforward as possible; do not use subqueries.
+        * Don't start your answer with [SQL: SELECT ...  ],
+        Answer with : Select ...
+
+
+
+        """
+    prompt2 = """ You are a Question Answering bot in a website that answers user questions about pages and the products they include.
+
+              A user asked the following question and this is the dataframe that you should answer from:
+
+              {user_question}
+
+              To answer the question, a dataframe was returned:
+
+              Dataframe:
+                {df}
+
+            In a few sentences, summarize the data in the table as to answers to the original user question and return the usernames or pagenames and pageurls or url. Avoid qualifiers like "based on the data" and do not comment on the structure or metadata of the table itself
+            and be friendly with the user and if df returned is no data return "be more specific", dont give information about tables or df just be general. if user asked about pages make sure to return the pagename and its url.
+          """
+    base_prompt = """ You are an expert at converting user questions into grammatically different versions of the user question putting into consideration chat history .
+    Your role is to rephrase the user question, Perform query decomposition. Given a user question without any creativity try to widen it in terms of spelling and grammar ,make it plural or singular for example and do not makeup questions by yourself.
+    The user question is: {user_question} it is not including any greetings or salutations.
+    Return the most expressive questions only according to the question.
+    For example: user question: " Tell me pages that sell pants ." , you will generate "Tell me pages that sells pant" and "Tell me pages that sell pants"
+    Another example: user question: " Suggest pages that have mom-fit jeans", you will generate " Suggest pages that have mom-fit jean" and " Suggest pages that have mom fit jeans
+    Anther example : user question " tell me a page that sells beach mats" , you will generate "Tell me a page that sells beach mat" and "Tell me a page that sells beachy mats" and "Tell me a page that sells beachy mat"
+    Another example : user question " what is the best page?" or "which are the top rated" or "what is the best one" or anything looks like this, you will look at the history an know what is the user talking about then you will generate "What is the best page for beach mat" and "What is the best page for beach mats"
+    Another example:user question: " hi" or " hello", you will not generate any question or rephrase anything just reply with" Hi!"
+    Always return the main user question that the user will ask accompanied with its other grammartically different question separated by 'OR'
+    the chat history to make the questions more clear if needed: {chat_history}
+    Try to make the words plural and in many other forms in order to make my sql queries more flexible
+    If there are acronyms or words you are not familiar with, do not try to rephrase them."""
 
 
 
     categories = get_cleaned_categories()
+    query= chat.send_message(base_prompt.format(user_question=user_input, chat_history=chat.history))
+    print(query.text)
     query = model.generate_content(
-        prompt1.format(user_question=user_input, categories=categories))
+        prompt1.format(user_question=query.text, categories=categories))
     print(query.text)
     query=clean_sql_query(query.text)
+    # query=query.text
     ans = ""
     df = query
-    if df != "no data":
+    if not df.startswith("No data"):
         with engine.connect() as conn:
             result = conn.execute(text(query))
             df = pd.DataFrame(result.fetchall(), columns=result.keys())
-    ans = model.generate_content(prompt2.format(user_question=user_input, df=df)).text
-    # return ans
+            print(df)
+    ans = model2.generate_content(prompt2.format(user_question=user_input, df=df)).text
+    print(ans)
     return ans
 
 
@@ -154,7 +199,7 @@ def load_homepage_random_recommendations():
             if image_data:
                 # base64_image = base64.b64encode(image_data).decode('utf-8')
                 page['image'] = f"data:image/jpeg;base64,{image_data}"
-          
+
     return pages
 
 
@@ -163,7 +208,6 @@ def load_search_results(user_input_to_search_bar):
     with engine.connect() as conn:  
         result=conn.execute(text("SELECT * FROM posts")) 
     return get_similar_posts(result,user_input_to_search_bar)
-
 
 def show_product_func(post_id):
     query = text("""
@@ -175,7 +219,6 @@ def show_product_func(post_id):
         product = result.fetchone()
         cols=result.keys()
         prod = dict(zip(cols, product))
-        prod["post_image"]=f"data:image/jpeg;base64,{prod['post_image']}"
         return prod
 
 def get_cleaned_categories():
