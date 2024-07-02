@@ -10,7 +10,7 @@ from io import BytesIO
 import base64
 
 
-db_connecton_uri = os.environ['db2']
+db_connecton_uri = os.environ['db3']
 engine = create_engine(db_connecton_uri)
 
 api_key = os.environ['api_key']
@@ -27,7 +27,7 @@ def clean_sql_query(query):
 
     
 def generate_gemini_response(user_input):
-    prompt1 = """You are an expert in converting English user questions to PostgreSQL code:
+    prompt1 = """You are an expert in converting English user questions to PostgreSQL queries:
 
     The first PostgreSQL table, named `posts`, has the following columns:
     - caption (TEXT): The caption of the post contains the product being selled in the post like lipgloss,jeans, hair serum, sunblock,eyliner,laptops,tshirts,tops and more.
@@ -71,7 +71,7 @@ def generate_gemini_response(user_input):
     SELECT DISTINCT * FROM posts WHERE caption LIKE '%rings%' OR caption LIKE '%ring%';
 
     5.page that has bags
-    SELECT DISTINCT *FROM posts INNER JOIN pages ON posts.pagename = pages.page_username WHERE category LIKE '%bags%' OR category LIKE '% bag%' OR caption LIKE '%bags%';
+    SELECT DISTINCT *FROM posts INNER JOIN pages ON posts.pagename = pages.page_username WHERE category LIKE '%bags%' OR category LIKE '% bag%' OR caption LIKE '%bags%' OR caption LIKE '%bag%';
 
     6.pages that has cross-bags
     SELECT DISTINCT * FROM posts WHERE caption LIKE '% cross-bags%' OR caption LIKE '%cross bag%' OR caption LIKE '%cross bags%' OR caption LIKE '%cross-bag%' ;
@@ -84,7 +84,7 @@ def generate_gemini_response(user_input):
 
 
     Rules for querying the dataset:
-    * if the question is searching for a product name query with like from column caption
+    * if the question is searching for a product name then do the query with (like)from column caption
     * if you queried using category from posts only order by score desc
     * if you queried using category from pages use like
     * select all usually
@@ -152,8 +152,8 @@ def load_homepage_random_recommendations():
         for page in pages:
             image_data = page.get('image')
             if image_data:
-                base64_image = base64.b64encode(image_data).decode('utf-8')
-                page['image'] = f"data:image/jpeg;base64,{base64_image}"
+                # base64_image = base64.b64encode(image_data).decode('utf-8')
+                page['image'] = f"data:image/jpeg;base64,{image_data}"
           
     return pages
 
@@ -163,6 +163,7 @@ def load_search_results(user_input_to_search_bar):
     with engine.connect() as conn:  
         result=conn.execute(text("SELECT * FROM posts")) 
     return get_similar_posts(result,user_input_to_search_bar)
+
 
 def show_product_func(post_id):
     query = text("""
@@ -174,6 +175,7 @@ def show_product_func(post_id):
         product = result.fetchone()
         cols=result.keys()
         prod = dict(zip(cols, product))
+        prod["post_image"]=f"data:image/jpeg;base64,{prod['post_image']}"
         return prod
 
 def get_cleaned_categories():
@@ -221,8 +223,8 @@ def get_pages_of_a_certain_category(category):
           for page in pages:
               image_data = page.get('image')
               if image_data:
-                  base64_image = base64.b64encode(image_data).decode('utf-8')
-                  page['image'] = f"data:image/jpeg;base64,{base64_image}"
+                  # base64_image = base64.b64encode(image_data).decode('utf-8')
+                  page['image'] = f"data:image/jpeg;base64,{image_data}"
     return pages
 
 def load_user(login_username):
