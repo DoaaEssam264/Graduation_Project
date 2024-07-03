@@ -11,6 +11,7 @@
     <!-- <link rel="stylesheet" href="static/Home.css">
     <link rel="stylesheet" href="static/SHOW_product.css"> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" />
     <title>Product Details</title>
     <script src="{{ url_for('static', filename='chatbot.js') }}" defer></script>
 </head>
@@ -72,14 +73,20 @@
             </div>
             <div class="basic-info">
                 <h1>{{ post.pagename }}</h1>
-                <div class="rate">
-                    <i class="filled fas fa-star"></i>
-                    <i class="filled fas fa-star"></i>
-                    <i class="filled fas fa-star"></i>
-                    <i class="filled fas fa-star"></i>
-                    <i class="filled fas fa-star"></i>
-                </div>
-                <span><i class="fas fa-heart"></i>{{ post.likescount }}</span>
+              <header>Rate it now</header>
+              <div class="stars" data-post-id="{{ post.post_id }}" data-page-name="{{ post.page_name }}>
+                  <i class="fa-solid fa-star" data-value="1"></i>
+                  <i class="fa-solid fa-star" data-value="2"></i>
+                  <i class="fa-solid fa-star" data-value="3"></i>
+                  <i class="fa-solid fa-star" data-value="4"></i>
+                  <i class="fa-solid fa-star" data-value="5"></i>
+              </div>
+              {% if post.likescount ==-1 %}
+                    <span><i class="fas fa-heart"></i> Hidden </span>
+              {% else %}
+                    <span><i class="fas fa-heart"></i>{{ post.likescount }} </span>
+              {% endif %} 
+              <p>{{ post.original_caption }}</p>
                 <div class="options">
                   
                   <a href="{{ post.posturl }}">Instagram post</a>
@@ -94,24 +101,65 @@
   
   <!-- "/chatbot" -->
   <button class="chatbot-toggler">
-    <span class="material-symbols-rounded">mode_comment</span>
-    <span class="material-symbols-outlined">close</span>
+    <span class="material-symbols-rounded"><i class="fas fa-robot"></i></span>
+    <span class="material-symbols-outlined">|</span>
   </button>
   <div class="chatbot">
     <header>
-      <h2>Chatbot</h2>
-      <span class="close-btn material-symbols-outlined">close</span>
+      <h2> InstaSearch Chatbot</h2>
+      <span class="close-btn material-symbols-outlined"><i class="fas fa-times"></i></span>
     </header>
     <ul class="chatbox">
       <li class="chat incoming">
-        <span class="material-symbols-outlined">smart_toy</span>
-        <p>Hi there 👋<br>How can I help you today?</p>
+        <span class="material-symbols-outlined bot-icon"><i class="fas fa-robot"></i></span>
+        <p>Welcome to InstaSearch ChatBot👋<br>How can I help you today?</p>
       </li>
     </ul>
     <div class="chat-input">
       <textarea placeholder="Enter a message..." spellcheck="false" required></textarea>
-      <span id="send-btn" class="material-symbols-rounded">send</span>
+      <span id="send-btn"><i class="fas fa-arrow-right"></i></span>
     </div>
   </div>
+
+  <script>
+      const stars = document.querySelectorAll('.stars i');
+
+      stars.forEach(star => {
+          star.addEventListener('click', async () => {
+              const ratingValue = star.getAttribute('data-value');
+              const postId = star.parentElement.getAttribute('data-post-id');
+              const pageName = star.parentElement.getAttribute('data-page-name');
+
+              // Send the rating value to the Flask route
+              try {
+                  const response = await fetch('/rate', {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json'
+                      },
+                     body: JSON.stringify({ rating: ratingValue, post_id: postId })
+                  });
+
+                  const result = await response.json();
+                  if (response.ok) {
+                      alert(`Rating submitted: ${result.rating}`);
+                  } else {
+                      alert(`Error: ${result.error}`);
+                  }
+              } catch (error) {
+                  alert('Failed to send rating. Please try again.');
+              }
+
+              // Update the star display
+              stars.forEach(s => s.classList.remove('active'));
+              star.classList.add('active');
+              let previousSibling = star.previousElementSibling;
+              while (previousSibling) {
+                  previousSibling.classList.add('active');
+                  previousSibling = previousSibling.previousElementSibling;
+              }
+          });
+      });
+  </script>
 </body>
 </html>

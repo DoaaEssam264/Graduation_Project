@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, url_for, redirect ,session,flash,jsonify,send_file
-from database import load_homepage_random_recommendations,load_search_results,add_user,load_user,get_cleaned_categories,get_pages_of_a_certain_category,get_favorite_posts,add_post_to_favorites,number_of_fav_posts,remove_post,show_product_func,generate_gemini_response
+from database import load_homepage_random_recommendations,load_search_results,add_user,load_user,get_cleaned_categories,get_pages_of_a_certain_category,get_favorite_posts,add_post_to_favorites,number_of_fav_posts,remove_post,show_product_func,generate_gemini_response,add_rating
 from flask_bcrypt import Bcrypt
 import os
 import io
@@ -13,12 +13,21 @@ my_secret = os.environ['SECRET_KEY']
 app.secret_key = my_secret
 
 
+# @app.route('/process', methods=['POST'])
+# def process():
+#         data = request.get_json()
+#         text = data.get('text', '')
+#         ans = generate_gemini_response(text)
+#         return jsonify({'response': ans})
 @app.route('/process', methods=['POST'])
 def process():
-    data = request.get_json()
-    text = data.get('text', '')
-    ans = generate_gemini_response(text)
-    return jsonify({'response': ans})
+    if 'loggedin' in session:
+        data = request.get_json()
+        text = data.get('text', '')
+        ans = generate_gemini_response(text)
+        return jsonify({'response': ans})
+    else:
+        return jsonify({'response': 'Please login first to be able to use InstaSearch Chatbot'})
 
 @app.route("/favorite", methods=['GET', 'POST'])
 def favorite():
@@ -125,6 +134,22 @@ def show_product(post_id):
     post=show_product_func(post_id)
     return render_template('SHOW_product.html',
         categories=cleaned_categories,post=post)
+
+@app.route('/rate', methods=['POST'])
+def rate():
+    data = request.get_json()
+    rating = int(data.get('rating'))
+    print(rating)
+    post_id = data.get('post_id')
+    page_name = data.get('page_name')
+    print(page_name)
+
+    if rating and 'loggedin' in session and post_id:
+        log_username = session['username']
+        add_rating(log_username, post_id, rating, page_name)
+        return jsonify({'error': ' added to rating'})
+    else:
+        return jsonify({'error': 'Login to rate'}) 
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0',debug=True)

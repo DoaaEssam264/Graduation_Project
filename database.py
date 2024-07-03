@@ -251,8 +251,6 @@ def get_favorite_posts(log_username):
     return favorite_posts
 
 
-
-
 def get_pages_of_a_certain_category(category):
     # geting all pages that belong to a specific category
     specific_category = f"%'{category}'%"
@@ -318,3 +316,14 @@ def remove_post(log_username, post_id):
 #     result = conn.execute(text("SELECT category FROM pages"))
 #     usernamess = [row for row in result.all()]
 # print(usernamess)
+
+def add_rating(log_username, post_id, rating,page_username):
+    with engine.connect() as conn:
+        trans = conn.begin()
+        conn.execute(
+            text("INSERT INTO post_rating (log_username, post_id, rating, page_username) VALUES (:log_username, :post_id, :rating, :page_username)"),
+            {"log_username": log_username, "post_id": post_id, "rating": rating, "page_username": page_username}
+        )
+        trans.commit()
+    
+    
