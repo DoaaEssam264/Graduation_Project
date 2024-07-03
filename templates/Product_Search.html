@@ -5,12 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous"/>
-    <!-- <link rel="stylesheet" href="static/chatbot.css" /> -->
     <link rel="stylesheet" href="static/Home.css">
     <link rel="stylesheet" href="static/Product_Search.css">
     <title>Products Search</title>
-    <!-- <script src="app.js"></script> -->
-    <script src="static/chatbot.js" defer></script>
 </head>
 <body>
   <div class="wrapper">
@@ -81,7 +78,9 @@
         {% else %}
             {% for post in posts %}
             <div class="box">
-               <a href="/show_product/{{post.post_id}}"><img src="{{ post.image }}"> </a>
+               <a href="/show_product/{{post.post_id}}">
+                <img id="image" src="{% if 't51.29350-15' in post.image %} static/images/{{ post.post_id }}.png{% else %}{{ post.image }}{% endif %}" alt="Image"/>  
+              </a>
                 <h2>{{ post.pagename }}</h2>
                 <!-- <p>{{ post.original_caption }}</p> -->
                 {% if post.likescount ==-1 %}
@@ -90,11 +89,7 @@
                       <span> Likes: {{ post.likescount }} </span>
                 {% endif %} 
                 <div class="rate">
-                    <i class="filled fas fa-star"></i>
-                    <i class="filled fas fa-star"></i>
-                    <i class="filled fas fa-star"></i>
-                    <i class="filled fas fa-star"></i>
-                    <i class="fa-regular fa-star"></i>
+                    <p style="color: #ec8908; font-size: 16px; ">Rating: {{post.rating}}</p>
                 </div>
                 <div class="options">
                     <a href="favorite/{{ post.post_id}}">Add to favorite</a>
@@ -105,28 +100,5 @@
         {% endif %}
     </div>
 
-
-  <!-- "/chatbot" -->
-  <!-- <button class="chatbot-toggler">
-    <span class="material-symbols-rounded"><i class="fas fa-robot"></i></span>
-    <span class="material-symbols-outlined">|</span>
-  </button>
-  <div class="chatbot">
-    <header>
-      <h2> InstaSearch Chatbot</h2>
-      <span class="close-btn material-symbols-outlined"><i class="fas fa-times"></i></span>
-    </header>
-    <ul class="chatbox">
-      <li class="chat incoming">
-        <span class="material-symbols-outlined bot-icon"><i class="fas fa-robot"></i></span>
-        <p>Welcome to InstaSearch ChatBot👋<br>How can I help you today?</p>
-      </li>
-    </ul>
-    <div class="chat-input">
-      <textarea placeholder="Enter a message..." spellcheck="false" required></textarea>
-      <span id="send-btn"><i class="fas fa-arrow-right"></i></span>
-    </div>
-  </div>
-     -->
 </body>
 </html>

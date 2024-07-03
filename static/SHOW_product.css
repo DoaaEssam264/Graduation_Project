@@ -22,6 +22,8 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      margin-bottom: 40px;
+      
   }
   
   .box {
@@ -38,6 +40,7 @@
       "images info"
       "images description";
       grid-gap: 35px;
+      margin-top: 100px;
   }
   
   .box .images {
@@ -110,7 +113,7 @@
       line-height: 1.5;
   }
   
-. header {
+.header {
   font-size: 22px;
   color: #190ca5;
   font-weight: 500;
@@ -120,7 +123,7 @@
 .stars {
   display: flex;
   align-items: center;
-  gap: 25px;
+  gap: 15px;
 }
 .stars i {
   color: #6a5b5b;
@@ -131,6 +134,12 @@
 .stars i.active {
   color: #ff9c1a;
 }
+#message {
+    color: red;
+}
+#rate-header{
+    color: #ff9c1a;
+}
   
   @media (max-width: 991px) {
       .box {
@@ -138,6 +147,7 @@
           grid-template-areas: 
           "info info"
           "images description";
+          margin-top: 100px;
       }
       .box .basic-info .options a {
           padding: 8.5px 12px;
@@ -152,7 +162,7 @@
       .box .basic-info .options {
           position: absolute;
           align-self: flex-end;
-          margin-top: 40px;
+          margin-top: 100px;
       }
   }
   
@@ -162,6 +172,7 @@
           grid-template-areas: 
           "images info"
           "description description";
+          margin-top: 100px;
       }
       .box .images {
           gap: 3px;
@@ -184,5 +195,7 @@
           "images"
           "info"
           "description";
+          margin-top: 100px;
       }
+
   }

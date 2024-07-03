@@ -10,11 +10,11 @@ from io import BytesIO
 import base64
 
 
-db_connecton_uri = os.environ['db3']
-engine = create_engine(db_connecton_uri)
+#db_connecton_uri = os.environ['db3']
+engine = create_engine('postgresql://postgres.bwbdemkhkaqfidcevcah:finalinshallah24@aws-0-eu-central-1.pooler.supabase.com:6543/postgres')
 
-api_key = os.environ['api_key']
-genai.configure(api_key=api_key)
+#api_key = os.environ['api_key']
+genai.configure(api_key='AIzaSyBRuY0v1D0Q216sT90_KoAs3lUzNbT9IYY')
 
 model = genai.GenerativeModel("gemini-1.5-flash")
 model2 =genai.GenerativeModel("gemini-1.5-flash")
@@ -219,7 +219,8 @@ def show_product_func(post_id):
         product = result.fetchone()
         cols=result.keys()
         prod = dict(zip(cols, product))
-        return prod
+        str_id=str(prod['post_id'])
+        return prod , str_id
 
 def get_cleaned_categories():
     with engine.connect() as conn:
@@ -317,13 +318,46 @@ def remove_post(log_username, post_id):
 #     usernamess = [row for row in result.all()]
 # print(usernamess)
 
-def add_rating(log_username, post_id, rating,page_username):
+def upsert_favTable(log_username, post_id, rating, page_username):
+    check_query = text("SELECT log_username, post_id FROM post_rating WHERE log_username = :log_username AND post_id = :post_id")
+
+    with engine.connect() as conn:
+        result = conn.execute(check_query, {"log_username": log_username, "post_id": post_id})
+        exists = result.fetchone() is not None
+
+    if exists:
+        update_query = text("UPDATE post_rating SET rating = :rating, page_username = :page_username WHERE log_username = :log_username AND post_id = :post_id")
+        with engine.connect() as conn:
+            trans = conn.begin()
+            conn.execute(update_query, {"log_username": log_username, "post_id": post_id, "rating": rating, "page_username": page_username})
+            trans.commit()
+    else:
+        insert_query = text("INSERT INTO post_rating (log_username, post_id, rating, page_username) VALUES (:log_username, :post_id, :rating, :page_username)")
+        with engine.connect() as conn:
+            trans = conn.begin()
+            conn.execute(insert_query, {"log_username": log_username, "post_id": post_id, "rating": rating, "page_username": page_username})
+            trans.commit()
+    update_rating_TABLEposts(post_id)
+
+def get_post_avg_rating(post_id):
+    query = text("""
+        SELECT AVG(rating) AS avg_rating
+        FROM post_rating
+        WHERE post_id = :post_id
+    """)
+    
+    with engine.connect() as conn:
+        result = conn.execute(query, {"post_id": post_id})
+        avg_rating = result.fetchone()[0]
+        if avg_rating is None:
+          return 0
+        else:
+          return round(avg_rating, 1)
+
+def update_rating_TABLEposts(post_id):
+    rating=get_post_avg_rating(post_id)
+    query = text(""" UPDATE posts SET rating = :rating WHERE post_id = :post_id """)
     with engine.connect() as conn:
         trans = conn.begin()
-        conn.execute(
-            text("INSERT INTO post_rating (log_username, post_id, rating, page_username) VALUES (:log_username, :post_id, :rating, :page_username)"),
-            {"log_username": log_username, "post_id": post_id, "rating": rating, "page_username": page_username}
-        )
+        result = conn.execute(query, {"post_id": post_id, "rating": rating})
         trans.commit()
-    
-    

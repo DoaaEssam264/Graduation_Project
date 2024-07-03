@@ -1,5 +1,5 @@
-from flask import Flask, render_template, request, url_for, redirect ,session,flash,jsonify,send_file
-from database import load_homepage_random_recommendations,load_search_results,add_user,load_user,get_cleaned_categories,get_pages_of_a_certain_category,get_favorite_posts,add_post_to_favorites,number_of_fav_posts,remove_post,show_product_func,generate_gemini_response,add_rating
+from flask import Flask, render_template, request, url_for, redirect ,session,flash,jsonify
+from database import load_homepage_random_recommendations,load_search_results,add_user,load_user,get_cleaned_categories,get_pages_of_a_certain_category,get_favorite_posts,add_post_to_favorites,number_of_fav_posts,remove_post,show_product_func,generate_gemini_response,upsert_favTable
 from flask_bcrypt import Bcrypt
 import os
 import io
@@ -9,8 +9,8 @@ from sqlalchemy import create_engine, text
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
-my_secret = os.environ['SECRET_KEY']
-app.secret_key = my_secret
+# my_secret = os.environ['SECRET_KEY']
+app.secret_key = '\x9f\xfa\x1dZ\xd2\x96\x13\xa9MY\xfa\xc9\xd42\xdc\x1c\xf8G7h\xc9N\xce\xf6'
 
 
 # @app.route('/process', methods=['POST'])
@@ -131,9 +131,9 @@ def remove_fav_post(post_id):
 @app.route("/show_product/<post_id>")
 def show_product(post_id):
     cleaned_categories = get_cleaned_categories()
-    post=show_product_func(post_id)
+    post,str_id=show_product_func(post_id)
     return render_template('SHOW_product.html',
-        categories=cleaned_categories,post=post)
+        categories=cleaned_categories,post=post,str_id=str_id)
 
 @app.route('/rate', methods=['POST'])
 def rate():
@@ -144,12 +144,12 @@ def rate():
     page_name = data.get('page_name')
     print(page_name)
 
-    if rating and 'loggedin' in session and post_id:
+    if rating and post_id and 'loggedin' in session :
         log_username = session['username']
-        add_rating(log_username, post_id, rating, page_name)
-        return jsonify({'error': ' added to rating'})
+        upsert_favTable(log_username, post_id, rating, page_name)
+        return jsonify({'response': 'Thank you for rating'})
     else:
-        return jsonify({'error': 'Login to rate'}) 
+        return jsonify({'response': 'Please login first to rate'})
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0',debug=True)
