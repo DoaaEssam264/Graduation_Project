@@ -10,7 +10,6 @@ from sqlalchemy import create_engine, text
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
 # my_secret = os.environ['SECRET_KEY']
-app.secret_key = '\x9f\xfa\x1dZ\xd2\x96\x13\xa9MY\xfa\xc9\xd42\xdc\x1c\xf8G7h\xc9N\xce\xf6'
 
 
 # @app.route('/process', methods=['POST'])

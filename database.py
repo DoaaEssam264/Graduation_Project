@@ -11,10 +11,10 @@ import base64
 
 
 #db_connecton_uri = os.environ['db3']
-engine = create_engine('postgresql://postgres.bwbdemkhkaqfidcevcah:finalinshallah24@aws-0-eu-central-1.pooler.supabase.com:6543/postgres')
+engine = create_engine('')
 
 #api_key = os.environ['api_key']
-genai.configure(api_key='AIzaSyBRuY0v1D0Q216sT90_KoAs3lUzNbT9IYY')
+genai.configure(api_key='')
 
 model = genai.GenerativeModel("gemini-1.5-flash")
 model2 =genai.GenerativeModel("gemini-1.5-flash")
