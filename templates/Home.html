@@ -94,13 +94,12 @@
           <p class="rate">
             Rating: {{ recommendation.rate }} <i style="color: #ff9c1a;" class="fa fa-star"></i>
           </p>
-          <p>{{ recommendation.bio}}</p>
+          <p style="margin-bottom: auto;">{{ recommendation.bio}}</p>
+          <a href="{{ recommendation.url }}" class="btn" >Instagram<i class="fab fa-instagram"></i
+            ></a>
           <p class="btn2">
             {{ recommendation.followerscount}} <i class="fas fa-users"></i>
           </p>
-          <a href="{{ recommendation.url }}" class="btn"
-            > <i class="fab fa-instagram"></i
-          ></a>
         </div>
       </div>
       {% endfor %}

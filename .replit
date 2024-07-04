@@ -1,11 +1,12 @@
-# modules = ["web", "nodejs-20", "python-3.12"]
-# run = "python static/app.js"
-modules = ["python-3.12"]
+modules = ["web", "python-3.12", "nodejs-20", "nix"]
 run = "python app.py"
 
 [[ports]]
 localPort = 5000
 externalPort = 80
+
+[nix]
+channel = "stable-24_05"
 
 # [[ports]]
 # localPort = 8080

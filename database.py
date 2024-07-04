@@ -9,10 +9,10 @@ import PIL.Image as Image
 from io import BytesIO
 import base64
 
-#db_connecton_uri = os.environ['db3']
-#engine = create_engine('')
-#api_key = os.environ['api_key']
-#genai.configure(api_key='')
+db_connecton_uri = os.environ['db3']
+engine = create_engine(db_connecton_uri)
+api_key = os.environ['api_key']
+genai.configure(api_key=api_key)
 model = genai.GenerativeModel("gemini-1.5-flash")
 model2 =genai.GenerativeModel("gemini-1.5-flash")
 base_model = genai.GenerativeModel('gemini-1.5-flash')

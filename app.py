@@ -8,10 +8,10 @@ import re
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
-# my_secret = os.environ['SECRET_KEY']
-#app.secret_key = ''
+my_secret = os.environ['SECRET_KEY']
+app.secret_key = my_secret
 
-email_regex = '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+#email_regex = '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
 
 @app.route('/process', methods=['POST'])
 def process():
