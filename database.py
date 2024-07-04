@@ -9,19 +9,15 @@ import PIL.Image as Image
 from io import BytesIO
 import base64
 
-
 #db_connecton_uri = os.environ['db3']
-engine = create_engine('')
-
+#engine = create_engine('')
 #api_key = os.environ['api_key']
-genai.configure(api_key='')
-
+#genai.configure(api_key='')
 model = genai.GenerativeModel("gemini-1.5-flash")
 model2 =genai.GenerativeModel("gemini-1.5-flash")
 base_model = genai.GenerativeModel('gemini-1.5-flash')
 chat = base_model.start_chat(history=[])
 print(chat.history)
-
 
 def clean_sql_query(query):
     if query.startswith("[SQL:"):
@@ -29,7 +25,6 @@ def clean_sql_query(query):
     if query.endswith("]"):
         query = query[:-1]  # Remove ']' from the end
     return query
-
 
 def generate_gemini_response(user_input):
     
@@ -185,8 +180,6 @@ def generate_gemini_response(user_input):
     print(ans)
     return ans
 
-
-#LOAD RECOMENDED PAGES TO HOME PAGE
 def load_homepage_random_recommendations():
     with engine.connect() as conn:
         result = conn.execute(
@@ -202,8 +195,6 @@ def load_homepage_random_recommendations():
 
     return pages
 
-
-#LOAD PAGES TO USER SEARCH QUERY
 def load_search_results(user_input_to_search_bar):
     with engine.connect() as conn:  
         result=conn.execute(text("SELECT * FROM posts")) 
@@ -236,7 +227,6 @@ def get_cleaned_categories():
     unique_cleaned_categories = list(set(cleaned_categories))
     return sorted(unique_cleaned_categories)
 
-
 def get_favorite_posts(log_username):
     query = text("""
         SELECT p.* 
@@ -250,7 +240,6 @@ def get_favorite_posts(log_username):
         columns=result.keys()
         favorite_posts_dicts = [dict(zip(columns, row)) for row in favorite_posts]
     return favorite_posts
-
 
 def get_pages_of_a_certain_category(category):
     # geting all pages that belong to a specific category
@@ -284,7 +273,6 @@ def add_user(login_username, email, hashed_password):
                           {"login_username": login_username, "email": email, "password": hashed_password})
         trans.commit()
 
-
 def number_of_fav_posts(username):
     query = text("""
         SELECT COUNT(DISTINCT fav_post_id) AS liked_count
@@ -310,13 +298,6 @@ def remove_post(log_username, post_id):
         trans = conn.begin()
         conn.execute(text("DELETE FROM fav WHERE log_username = :log_username AND fav_post_id = :post_id"), {"log_username": log_username, "post_id": post_id})
         trans.commit()
-
-
-#TO CHECK DB
-# with engine.connect() as conn:
-#     result = conn.execute(text("SELECT category FROM pages"))
-#     usernamess = [row for row in result.all()]
-# print(usernamess)
 
 def upsert_favTable(log_username, post_id, rating, page_username):
     check_query = text("SELECT log_username, post_id FROM post_rating WHERE log_username = :log_username AND post_id = :post_id")
@@ -361,3 +342,19 @@ def update_rating_TABLEposts(post_id):
         trans = conn.begin()
         result = conn.execute(query, {"post_id": post_id, "rating": rating})
         trans.commit()
+
+def get_avgpage_rating(page_username):
+    check_query = text("SELECT AVG(rating) AS avg_Page_rating FROM post_rating WHERE page_username = :page_username")
+    with engine.connect() as conn:
+        result = conn.execute(check_query, {"page_username": page_username})
+        avg_Page_rating = result.fetchone()[0] 
+        return round(avg_Page_rating, 1)
+
+def update_page_avg_rating(page_username):
+    query = text(""" UPDATE pages SET rate = :rate WHERE page_username = :page_username """)
+    rate=get_avgpage_rating(page_username)
+    with engine.connect() as conn:
+        trans = conn.begin()
+        result = conn.execute(query, {"rate": rate, "page_username": page_username})
+        trans.commit()
+

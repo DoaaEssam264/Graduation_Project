@@ -2,22 +2,17 @@ from flask import Flask, render_template, request, url_for, redirect ,session,fl
 from database import load_homepage_random_recommendations,load_search_results,add_user,load_user,get_cleaned_categories,get_pages_of_a_certain_category,get_favorite_posts,add_post_to_favorites,number_of_fav_posts,remove_post,show_product_func,generate_gemini_response,upsert_favTable
 from flask_bcrypt import Bcrypt
 import os
-import io
-from sqlalchemy import create_engine, text
+import re
 
 
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
 # my_secret = os.environ['SECRET_KEY']
+#app.secret_key = ''
 
+email_regex = '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
 
-# @app.route('/process', methods=['POST'])
-# def process():
-#         data = request.get_json()
-#         text = data.get('text', '')
-#         ans = generate_gemini_response(text)
-#         return jsonify({'response': ans})
 @app.route('/process', methods=['POST'])
 def process():
     if 'loggedin' in session:
@@ -62,6 +57,7 @@ def home_page():
 
 @app.route("/register", methods=['GET','POST'])
 def register():
+ 
     if request.method == 'POST':
         form_type = request.form.get('form_type')
         if form_type == 'register':  # Handle sign-up form submission
@@ -76,7 +72,7 @@ def register():
                 return render_template('signup_login.html',form_type='register')                
             else:
                 add_user(username, email, hashed_password)
-                return redirect(url_for('register'))
+                return redirect(url_for('home_page'))
 
         elif form_type == 'login':  # Handle sign-in form submission
             username = request.form.get('login_username')
