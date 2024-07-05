@@ -8,11 +8,12 @@ import io
 import PIL.Image as Image
 from io import BytesIO
 import base64
+from datetime import datetime, timedelta
 
-db_connecton_uri = os.environ['db3']
-engine = create_engine(db_connecton_uri)
-api_key = os.environ['api_key']
-genai.configure(api_key=api_key)
+#db_connecton_uri = os.environ['db3'] 
+engine = create_engine("")
+#api_key = os.environ['api_key']
+genai.configure(api_key="")
 model = genai.GenerativeModel("gemini-1.5-flash")
 model2 =genai.GenerativeModel("gemini-1.5-flash")
 base_model = genai.GenerativeModel('gemini-1.5-flash')
@@ -195,6 +196,51 @@ def load_homepage_random_recommendations():
 
     return pages
 
+def load_homepage_recommendations(username):
+    recommendations = retrieve(username)
+    if(recommendations==[]): 
+      pages=load_homepage_random_recommendations()
+    else:
+      two_weeks_ago = datetime.now() - timedelta(weeks=2)
+      recent_recommendations = [rec for rec in recommendations if rec['timestamp'] >= two_weeks_ago]
+      if(recent_recommendations ==[]):
+        pages=load_homepage_random_recommendations()
+      else:
+        searched_products_list = [rec['searched_products'] for rec in recent_recommendations]
+        search_conditions = " OR ".join([f"caption LIKE :searched_product{i}" for i in range(len(searched_products_list))])
+        search_query = text(f"""
+        SELECT DISTINCT pagename
+        FROM posts 
+        WHERE {search_conditions}
+        LIMIT 6;
+        """)
+        params = {f'searched_product{i}': f'%{searched_product}%' for i, searched_product in enumerate(searched_products_list)}
+
+        with engine.connect() as conn:
+          result = conn.execute(search_query, params)
+          rand = result.fetchall()
+
+        if not rand:
+          pages=load_homepage_random_recommendations()
+        columns = result.keys()
+        pages = [dict(zip(columns, row)) for row in rand]
+        page_query = text("""
+    SELECT *
+    FROM pages
+    WHERE page_username = ANY(:page_names)
+""")
+        page_names = [page['pagename'] for page in pages]
+        with engine.connect() as conn:
+            result = conn.execute(page_query, {'page_names': page_names})
+            rand = result.fetchall()
+            columns = result.keys()
+            pages = [dict(zip(columns, row)) for row in rand]
+            for page in pages:
+                image_data = page.get('image')
+                if image_data:
+                    # base64_image = base64.b64encode(image_data).decode('utf-8')
+                    page['image'] = f"data:image/jpeg;base64,{image_data}"
+    return pages
 def load_search_results(user_input_to_search_bar):
     with engine.connect() as conn:  
         result=conn.execute(text("SELECT * FROM posts")) 
@@ -368,4 +414,26 @@ def insert(username, searched_products):
         trans = conn.begin()  
         conn.execute(insert_query, {'username': username, 'searched_products': searched_products})
         trans.commit()
-        print("Data inserted successfully.")
+        
+import pandas as pd
+from sqlalchemy import create_engine, text
+
+# Assuming `engine` is already created somewhere in your code
+# engine = create_engine('your_database_url')
+
+def retrieve(user):
+    select_query = text("""
+    SELECT username, searched_products, timestamp
+    FROM recommendations
+    WHERE username = :user;
+    """)
+    with engine.connect() as conn:
+        result = conn.execute(select_query, {'user': user})
+        columns = list(result.keys())
+        rows = []
+        for row in result:
+            row_dict = {columns[i]: row[i] for i in range(len(columns))}
+            rows.append(row_dict)
+    df = pd.DataFrame(rows)
+    return rows
+

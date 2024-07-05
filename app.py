@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, url_for, redirect ,session,flash,jsonify
-from database import load_homepage_random_recommendations,load_search_results,add_user,load_user,get_cleaned_categories,get_pages_of_a_certain_category,get_favorite_posts,add_post_to_favorites,number_of_fav_posts,remove_post,show_product_func,generate_gemini_response,upsert_favTable,insert
+from database import load_homepage_random_recommendations,load_homepage_recommendations,load_search_results,add_user,load_user,get_cleaned_categories,get_pages_of_a_certain_category,get_favorite_posts,add_post_to_favorites,number_of_fav_posts,remove_post,show_product_func,generate_gemini_response,upsert_favTable,insert
 from flask_bcrypt import Bcrypt
 import os
 import re
@@ -8,8 +8,8 @@ import re
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
-my_secret = os.environ['SECRET_KEY']
-app.secret_key = my_secret
+#my_secret = os.environ['SECRET_KEY']
+app.secret_key = ""
 
 #email_regex = '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
 
@@ -50,11 +50,11 @@ def accountpage():
 
 @app.route("/")
 def home_page():
-    # if 'loggedin' in session:
-    #     pages=  puttt the fuction here
-    # else:
-    #     pages=load_homepage_random_recommendations()
-    pages=load_homepage_random_recommendations()
+    if 'loggedin' in session:
+        log_username=session['username']
+        pages= load_homepage_recommendations(log_username)
+    else:
+        pages=load_homepage_random_recommendations()
     cleaned_categories = get_cleaned_categories()
     return render_template('Home.html', recommendations=pages,categories=cleaned_categories)
 
@@ -76,8 +76,10 @@ def register():
                 return render_template('signup_login.html',form_type='register')                
             else:
                 add_user(username, email, hashed_password)
+                session['loggedin'] = True
+                session['username'] = username
                 return redirect(url_for('home_page'))
-
+            
         elif form_type == 'login':  # Handle sign-in form submission
             username = request.form.get('login_username')
             password = request.form.get('login_password')
