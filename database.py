@@ -10,10 +10,10 @@ from io import BytesIO
 import base64
 from datetime import datetime, timedelta
 
-#db_connecton_uri = os.environ['db3'] 
-engine = create_engine("")
-#api_key = os.environ['api_key']
-genai.configure(api_key="")
+db_connecton_uri = os.environ['db3'] 
+engine = create_engine(db_connecton_uri)
+api_key = os.environ['api_key']
+genai.configure(api_key=api_key)
 model = genai.GenerativeModel("gemini-1.5-flash")
 model2 =genai.GenerativeModel("gemini-1.5-flash")
 base_model = genai.GenerativeModel('gemini-1.5-flash')
@@ -212,7 +212,7 @@ def load_homepage_recommendations(username):
         SELECT DISTINCT pagename
         FROM posts 
         WHERE {search_conditions}
-        LIMIT 6;
+        LIMIT 4;
         """)
         params = {f'searched_product{i}': f'%{searched_product}%' for i, searched_product in enumerate(searched_products_list)}
 
