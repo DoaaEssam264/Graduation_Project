@@ -358,3 +358,14 @@ def update_page_avg_rating(page_username):
         result = conn.execute(query, {"rate": rate, "page_username": page_username})
         trans.commit()
 
+def insert(username, searched_products):
+    # Insert query
+    insert_query = text("""
+    INSERT INTO recommendations (username, searched_products)
+    VALUES (:username, :searched_products);
+    """)
+    with engine.connect() as conn:
+        trans = conn.begin()  
+        conn.execute(insert_query, {'username': username, 'searched_products': searched_products})
+        trans.commit()
+        print("Data inserted successfully.")

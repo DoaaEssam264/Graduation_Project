@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, url_for, redirect ,session,flash,jsonify
-from database import load_homepage_random_recommendations,load_search_results,add_user,load_user,get_cleaned_categories,get_pages_of_a_certain_category,get_favorite_posts,add_post_to_favorites,number_of_fav_posts,remove_post,show_product_func,generate_gemini_response,upsert_favTable
+from database import load_homepage_random_recommendations,load_search_results,add_user,load_user,get_cleaned_categories,get_pages_of_a_certain_category,get_favorite_posts,add_post_to_favorites,number_of_fav_posts,remove_post,show_product_func,generate_gemini_response,upsert_favTable,insert
 from flask_bcrypt import Bcrypt
 import os
 import re
@@ -50,6 +50,10 @@ def accountpage():
 
 @app.route("/")
 def home_page():
+    # if 'loggedin' in session:
+    #     pages=  puttt the fuction here
+    # else:
+    #     pages=load_homepage_random_recommendations()
     pages=load_homepage_random_recommendations()
     cleaned_categories = get_cleaned_categories()
     return render_template('Home.html', recommendations=pages,categories=cleaned_categories)
@@ -112,8 +116,11 @@ def search_results():
     # data =request.form
     cleaned_categories = get_cleaned_categories()
     posts=load_search_results(data['user_input_to_search_bar'])
-    #if loggedin: sa3etha hoty fel table el serch bta3o
     dict_len=len(posts)
+    if 'loggedin' in session:
+        log_username=session['username']
+        searched_products=data['user_input_to_search_bar'].lower()
+        insert(log_username, searched_products)
     return render_template('Product_Search.html', posts=posts,categories=cleaned_categories,dict_len=dict_len)
 
 @app.route("/remove_post/<post_id>")
