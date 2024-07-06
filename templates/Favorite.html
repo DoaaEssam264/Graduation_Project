@@ -74,7 +74,11 @@
             <h2>{{ post.pagename}}</h2>
             <p style="color: black;">{{ post.category|title }}</p>
             <p>{{ post.bio}}</p>
-            <span>{{ post.likescount}} Likes</span>
+            {% if post.likescount ==-1 %}
+                  <span> Likes: Hidden </span>
+            {% else %}
+                  <span> Likes: {{ post.likescount }} </span>
+            {% endif %} 
             <div style="color: #ff9c1a; font-size:16px;" class="rate">Rate: {{post.rating}}</div> 
             <div class="options">
                 <a href="/remove_post/{{ post.post_id}}">Remove</a>
