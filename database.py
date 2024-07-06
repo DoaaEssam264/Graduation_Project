@@ -199,12 +199,12 @@ def load_homepage_random_recommendations():
 def load_homepage_recommendations(username):
     recommendations = retrieve(username)
     if(recommendations==[]): 
-      pages=load_homepage_random_recommendations()
+      return load_homepage_random_recommendations()
     else:
       two_weeks_ago = datetime.now() - timedelta(weeks=2)
       recent_recommendations = [rec for rec in recommendations if rec['timestamp'] >= two_weeks_ago]
       if(recent_recommendations ==[]):
-        pages=load_homepage_random_recommendations()
+        return load_homepage_random_recommendations()
       else:
         searched_products_list = [rec['searched_products'] for rec in recent_recommendations]
         search_conditions = " OR ".join([f"caption LIKE :searched_product{i}" for i in range(len(searched_products_list))])
@@ -221,7 +221,7 @@ def load_homepage_recommendations(username):
           rand = result.fetchall()
 
         if not rand:
-          pages=load_homepage_random_recommendations()
+          return load_homepage_random_recommendations()
         columns = result.keys()
         pages = [dict(zip(columns, row)) for row in rand]
         page_query = text("""
@@ -241,6 +241,7 @@ def load_homepage_recommendations(username):
                     # base64_image = base64.b64encode(image_data).decode('utf-8')
                     page['image'] = f"data:image/jpeg;base64,{image_data}"
     return pages
+    
 def load_search_results(user_input_to_search_bar):
     with engine.connect() as conn:  
         result=conn.execute(text("SELECT * FROM posts")) 
